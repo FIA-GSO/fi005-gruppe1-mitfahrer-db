@@ -10,6 +10,9 @@ module.exports = {
         'gso-blue': '#5B9BD5'
       }
     },
+    fontFamily: {
+      'sans': ['Calibri', 'Helvetica', 'Candara', 'sans-serif']
+    }
   },
   plugins: [],
 }
