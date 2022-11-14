@@ -7,7 +7,9 @@ const user = useUserStore();
   <main>
     <header class="bg-white">
       <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
-        <img alt="Vue logo" class="logo h-20 max-w-max pl-4 md:pl-12" src="@/assets/cropped-LOGO-GSO_neu.png" />
+        <RouterLink to="/" class="pl-4 md:pl-12 mx-auto lg:mx-0 p-2">
+            <img alt="Vue logo" class="logo max-w-max h-20" src="@/assets/cropped-LOGO-GSO_neu.png" />
+        </RouterLink>
         <div class="flex flex-row items-center gap-4 p-4 md:gap-12 md:h-24">
           <div><a href="#" @click.prevent="user.signIn()">Fake Login</a></div>
           <div><RouterLink to="/login">Einloggen</RouterLink></div>
