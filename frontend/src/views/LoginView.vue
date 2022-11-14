@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import TheWelcome from '../components/TheWelcome.vue'
 
-async function submit(data) {
+async function submit(data: any) {
   console.log("Submit", data);
   await fetch("http://localhost:5000/login", {
     method: "POST",
@@ -12,7 +12,7 @@ async function submit(data) {
     body: JSON.stringify(data),
   });
 }
-function forgotPassword(data) {
+function forgotPassword(data: any) {
   console.log("forgotPassword", data);
 }
 </script>
@@ -32,12 +32,12 @@ function forgotPassword(data) {
     </header>
     <div class="bg-white pt-8 h-full">
       <div
-        class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400"
+        class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
       >
         <FormKit
           type="form"
           @submit="submit"
-          class="flex flex-col p-8"
+          class="flex flex-col"
           submit-label="Login"
         >
           <h1 class="font-sans dont-bold text-3xl text-center pb-16">
@@ -57,13 +57,13 @@ function forgotPassword(data) {
             label="Passwort"
             class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"
           ></FormKit>
-          <a
+        </FormKit>
+        <a
             href="#"
             v-on:click="forgotPassword"
             class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
             >Passwort vergessen?</a
           >
-        </FormKit>
       </div>
     </div>
   </main>
