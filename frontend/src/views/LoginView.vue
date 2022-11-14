@@ -5,6 +5,12 @@ export default {
     methods: {
         login () {},
         forgotPassword() {}
+    },
+    data () {
+        return {
+            email: '',
+            password: ''
+        }
     }
 }
 
@@ -21,15 +27,14 @@ export default {
       </div>
     </header>
     <div class="bg-white pt-8 h-full">
-        <div class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400">
-            <form ref="form" v-on:submit.prevent="login" class="flex flex-col p-8">
-                <h1 class="font-sans dont-bold text-3xl text-center pb-16">Einloggen</h1>
-                <FormKit type="text" validation="required|email" label="GSO-E-Mail-Adresse" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
-                <FormKit type="password" validation="required" label="Passwort" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
-                <FormKit type="button" v-on:click="login" class="bg-white rounded border-2 border-gray-400 h-16 text-xl mb-8 hover:cursor-pointer hover:bg-gray-400 hover:text-white transition hover:ease-in-out active:bg-gray-600 outline-1 outline-gray-600">Login</FormKit>
-                <a href="#" v-on:click="forgotPassword" class="text-black text-center underline outline-none	hover:text-gray-600 focus:text-gray-500">Passwort vergessen?</a>
-            </form>
-          
+        <div class="flex flex-col align-centercontainer bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border sm:border-gray-400 p-8">
+            <h1 class="font-sans dont-bold text-3xl text-center pb-16">Einloggen</h1>
+            <FormKit type="form" @submit="login" label="Login" class="flex flex-col align-center">
+                <FormKit v-model="email" type="text" validation="required|email" label="GSO-E-Mail-Adresse" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
+                <FormKit v-model="password" type="password" validation="required" label="Passwort" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
+            </FormKit>
+            <a href="#" v-on:click="forgotPassword" class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500">Passwort vergessen?</a>
+
         </div>
       </div>
   </main>
