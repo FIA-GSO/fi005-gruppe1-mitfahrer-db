@@ -3,10 +3,10 @@
 </script>
 
 <template>
-  <main>
+  <main class="h-full">
     <header class="bg-white">
       <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
-        <img alt="Vue logo" class="logo h-20 max-w-max pl-4 md:pl-12" src="@/assets/cropped-LOGO-GSO_neu.png" />
+        <img alt="Vue logo" class="logo h-20 max-w-max pl-4 md:pl-12 mx-auto lg:mx-0" src="@/assets/cropped-LOGO-GSO_neu.png" />
       </div>
     </header>
     <div class="bg-white pt-8 h-full">
@@ -14,10 +14,11 @@
             <form action="none" class="flex flex-col p-8">
                 <h1 class="font-sans dont-bold text-3xl text-center pb-16">Einloggen</h1>
                 <span class="pb-2">GSO-E-Mail-Adresse</span>
-                <input type="text" class="bg-gray-200 rounded h-16 mb-8">
+                <input type="text" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600">
                 <span class="pb-2">Passwort</span>
-                <input type="text" class="bg-gray-200 rounded h-16 mb-8">
-                <input type="submit" value="Login" class="bg-white rounded border-2 border-gray-400 h-16 text-xl">
+                <input type="text" class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600">
+                <input type="submit" value="Login" class="bg-white rounded border-2 border-gray-400 h-16 text-xl mb-8 hover:cursor-pointer hover:bg-gray-400 hover:text-white transition hover:ease-in-out active:bg-gray-600 outline-1 outline-gray-600">
+                <a href="" class="text-black text-center underline outline-none	hover:text-gray-600 focus:text-gray-500">Passwort vergessen?</a>
             </form>
           
         </div>
