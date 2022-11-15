@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { plugin, defaultConfig } from '@formkit/vue'
 import { de } from "@formkit/i18n"
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
 
 import App from './App.vue'
 import router from './router'
@@ -20,5 +22,9 @@ app.use(plugin, defaultConfig({
 app.use(createPinia())
 app.use(router)
 
+// Setup Font Awesome and add icons to the library
+import { faCarSide } from '@fortawesome/free-solid-svg-icons'
+library.add(faCarSide)
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')
