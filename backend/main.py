@@ -32,6 +32,10 @@ class User(db.Model):
 
     email = db.Column(db.String, primary_key=True)
     password = db.Column(db.String)
+    last_name = db.Column(db.String)
+    first_name = db.Column(db.String)
+    birthdate = db.Column(db.Date)
+    gender = db.Column(db.String)
     authenticated = db.Column(db.Boolean, default=False)
 
     def is_active(self):
