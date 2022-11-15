@@ -67,10 +67,8 @@ class Ride(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
 
-    departutre_adress_longitude = db.Column(db.Float)
-    departutre_adress_latitude = db.Column(db.Float)
-    arrival_adress_longitude = db.Column(db.Float)
-    arrival_adress_latitude = db.Column(db.Float)
+    departutre_adress = db.Column(db.String)
+    arrival_adress = db.Column(db.String)
     departure_date_time = db.Column(db.DateTime)
 
     ride_is_started = db.Column(db.Boolean)
@@ -132,6 +130,7 @@ class Ride(db.Model):
             "animalFree": self.animal_free_car,
             "coronaRules": self.corona_rules_in_car,
             "smoking": self.smoking_in_car,
+            "remainingSeats": self.available_passenger_seats - len(self.reservations),
         }
 
 
