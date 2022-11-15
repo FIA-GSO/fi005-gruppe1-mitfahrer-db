@@ -3,7 +3,8 @@ import RideListing from "@/components/RideListing.vue";
 import { onMounted, reactive } from "vue";
 
 const data = reactive({
-  rides: [],
+  postedRides: [],
+  reservedRides: [],
 });
 
 async function getPostedRides() {
@@ -17,7 +18,7 @@ async function getPostedRides() {
     return r.json();
   });
   console.log("posted rides response", response);
-  data.rides = response.rides;
+  data.postedRides = response.rides;
 }
 
 async function getReservedRides() {
@@ -31,7 +32,7 @@ async function getReservedRides() {
     return r.json();
   });
   console.log("reserved rides response", response);
-  data.rides = response.rides;
+  data.reservedRides = response.rides;
 }
 
 onMounted(() => {
@@ -46,25 +47,29 @@ onMounted(() => {
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Angebotene Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
-        <RideListing v-for="ride in data.rides" :ride="ride" />
-        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
+      <div class="bg-white w-[600px] rounded-md overflow-hidden">
+        <RideListing v-for="ride in data.postedRides" :ride="ride" />
       </div>
-      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
-        Neue Fahrt anbieten
-      </button>
+      <RouterLink
+        to="/rides/create"
+        class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
+      >
+        Fahrt anbieten
+      </RouterLink>
     </div>
     <div>
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Reservierte Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
-        <RideListing v-for="ride in data.rides" :ride="ride" />
-        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
+      <div class="bg-white w-[600px] rounded-md overflow-hidden">
+        <RideListing v-for="ride in data.reservedRides" :ride="ride" />
       </div>
-      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
+      <RouterLink
+        to="/rides/search"
+        class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
+      >
         Neue Fahrt suchen
-      </button>
+      </RouterLink>
     </div>
   </main>
 </template>

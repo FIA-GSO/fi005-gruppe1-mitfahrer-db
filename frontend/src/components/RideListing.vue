@@ -4,17 +4,36 @@ const props = defineProps({
     type: Object as any,
   },
 });
+const addressLines = (address: string) => {
+  return address.split(", ");
+};
 </script>
 
 <template>
   <div
-    class="text-lg px-3 p-2 flex flex-row justify-between items-center hover:bg-blue-50 hover:text-cyan-800 cursor-pointer"
+    class="text-xs px-3 p-2 flex flex-row justify-between items-center hover:bg-blue-50 hover:text-cyan-800 cursor-pointer border-b"
   >
-    <span class="route">
-      <span class="font-semibold">{{ props.ride.departureAddress }}</span>
-      <font-awesome-icon icon="fa-solid fa-car-side" class="px-2" />
-      <span class="font-semibold">{{ props.ride.arrivalAddress }}</span>
-    </span>
+    <div class="route flex flex-row gap-8">
+      <div class="font-semibold w-[155px]">
+        <div
+          v-for="(line, i) in addressLines(props.ride.departureAddress)"
+          :class="{ 'font-bold': i === 0 }"
+        >
+          {{ line }}
+        </div>
+      </div>
+      <div class="flex items-center justify-center">
+        <font-awesome-icon icon="fa-solid fa-car-side" class="px-2 text-lg" />
+      </div>
+      <div class="font-semibold w-[150px]">
+        <div
+          v-for="(line, i) in addressLines(props.ride.arrivalAddress)"
+          :class="{ 'font-bold': i === 0 }"
+        >
+          {{ line }}
+        </div>
+      </div>
+    </div>
     <span class="time text-base">
       {{
         new Date(props.ride.departureDateTime).toLocaleString("de-DE", {
