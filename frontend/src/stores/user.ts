@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { useRouter } from "vue-router";
 
 function getErrorMessage(status: Number) {
   switch (status) {
@@ -50,10 +51,27 @@ export const useUserStore = defineStore('user', () => {
       user.value = response.user;
     }
   }
+  async function logout() {
+    const response = await fetch("http://127.0.0.1:5000/logout", {
+      method: "GET",
+      credentials: "include"
+    }).then(r => {
+      if (!r.ok) {
+        throw new Error(getErrorMessage(r.status));
+      }
+      return r.json();
+    });
+    console.log("logout response", response);
+    if (response.status === "success") {
+      user.value = null;
+    } else {
+      throw new Error("Logout fehlgeschlagen");
+    }
+  }
   const initialized = ref(false);
   getUser().then(() => {
     initialized.value = true
   });
-  return { initialized, user, login }
+  return { initialized, user, login, logout }
 })
 
