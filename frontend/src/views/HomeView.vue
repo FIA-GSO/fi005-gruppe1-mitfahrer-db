@@ -18,8 +18,24 @@ async function getPostedRides() {
   console.log("posted rides response", response);
   data.rides = response.rides;
 }
+
+async function getReservedRides() {
+  const response = await fetch("http://127.0.0.1:5000/rides/reserved", {
+    method: "GET",
+    credentials: "include",
+  }).then((r) => {
+    if (!r.ok) {
+      throw new Error("Fail");
+    }
+    return r.json();
+  });
+  console.log("reserved rides response", response);
+  data.rides = response.rides;
+}
+
 onMounted(() => {
   getPostedRides();
+  getReservedRides();
 });
 </script>
 

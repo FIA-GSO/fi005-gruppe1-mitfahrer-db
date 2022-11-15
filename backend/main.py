@@ -64,7 +64,7 @@ class User(db.Model):
 class Ride(db.Model):
     __tablename__ = "ride"
 
-    ride_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
     departutre_adress = db.Column(db.String)
     arrival_adress = db.Column(db.String)
@@ -111,7 +111,7 @@ class Ride(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.ride_id,
+            "id": self.id,
             "departureAddress": self.departutre_adress,
             "arrivalAddress": self.departutre_adress,
             "departureDateTime": self.departure_date_time.isoformat(),
@@ -125,6 +125,16 @@ class Ride(db.Model):
             "coronaRules": self.corona_rules_in_car,
             "smoking": self.smoking_in_car,
         }
+
+
+class Reservation(db.Model):
+    __tablename__ = "reservation"
+
+    user_email = db.Column(db.String, db.ForeignKey("user.email"), primary_key=True)
+    ride_id = db.Column(db.Integer, db.ForeignKey("ride.id"), primary_key=True)
+
+    user = db.relationship("User", foreign_keys=user_email, backref="reservations")
+    ride = db.relationship("Ride", foreign_keys=ride_id, backref="reservations")
 
 
 @login_manager.user_loader
@@ -200,9 +210,16 @@ def get_posted_rides():
     return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
 
 
+@app.route("/rides/reserved", methods=["GET"])
+def get_reserved_rides():
+    user = flask_login.current_user
+    rides = [reservation.ride for reservation in user.reservations]
+    return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
+
+
 def create_mock_ride():
     return Ride(
-        ride_id=1,
+        id=1,
         user_email="a@b.de",
         departutre_adress="Bonn",
         arrival_adress="GSO",
@@ -218,6 +235,10 @@ def create_mock_ride():
         corona_rules_in_car=True,
         smoking_in_car=True,
     )
+
+
+def create_mock_reservation():
+    return Reservation(user_email="a@b.de", ride_id=1)
 
 
 @app.route("/")
@@ -237,7 +258,9 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
             )
             ride = create_mock_ride()
+            reservation = create_mock_reservation()
             db.session.add(user)
             db.session.add(ride)
+            db.session.add(reservation)
             db.session.commit()
     app.run(debug=True)
