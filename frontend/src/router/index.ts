@@ -4,6 +4,7 @@ import RootView from '../views/RootView.vue'
 import RegisterDetailsView from '../views/RegisterDetailsView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
+import UserHelpView from '@/views/UserHelpView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,10 @@ const router = createRouter({
     {
       path: '/reset-password',
       component: ResetPasswordView
+    },
+    {
+      path: '/help',
+      component: UserHelpView
     },
     {
       path: '/register-confirm',

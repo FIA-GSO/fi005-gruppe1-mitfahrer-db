@@ -19,7 +19,7 @@ const user = useUserStore();
         >
           <div><RouterLink to="/login">Einloggen</RouterLink></div>
           <div><RouterLink to="/register">Registrieren</RouterLink></div>
-          <div><RouterLink to="/login">Benutzerhilfe</RouterLink></div>
+          <div><RouterLink to="/help">Benutzerhilfe</RouterLink></div>
         </div>
       </div>
       <div class="relative">
