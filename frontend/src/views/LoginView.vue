@@ -3,8 +3,9 @@
 
 async function submit(data: any) {
   console.log("Submit", data);
-  await fetch("http://localhost:5000/login", {
+  await fetch("http://127.0.0.1:5000/login", {
     method: "POST",
+    credentials: "include",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -59,11 +60,11 @@ function forgotPassword(data: any) {
           ></FormKit>
         </FormKit>
         <a
-            href="#"
-            v-on:click="forgotPassword"
-            class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
-            >Passwort vergessen?</a
-          >
+          href="#"
+          v-on:click="forgotPassword"
+          class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
+          >Passwort vergessen?</a
+        >
       </div>
     </div>
   </main>
