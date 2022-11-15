@@ -11,9 +11,8 @@ const user = useUserStore();
             <img alt="Vue logo" class="logo max-w-max h-20" src="@/assets/cropped-LOGO-GSO_neu.png" />
         </RouterLink>
         <div class="flex flex-row justify-center md:justify-start items-center gap-4 p-4 md:gap-12 md:h-24">
-          <div><a href="#" @click.prevent="user.signIn()">Fake Login</a></div>
           <div><RouterLink to="/login">Einloggen</RouterLink></div>
-          <div><RouterLink to="/login">Registrieren</RouterLink></div>
+          <div><RouterLink to="/register">Registrieren</RouterLink></div>
           <div><RouterLink to="/login">Benutzerhilfe</RouterLink></div>
         </div>
       </div>

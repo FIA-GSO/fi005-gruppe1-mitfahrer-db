@@ -1,16 +1,18 @@
 <script setup lang="ts">
-// import TheWelcome from '../components/TheWelcome.vue'
+import { getNode, setErrors } from "@formkit/core";
+import { useRouter, useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
+const userStore = useUserStore();
+const router = useRouter();
 
 async function submit(data: any) {
   console.log("Submit", data);
-  await fetch("http://localhost:5000/login", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    await userStore.login(data.email, data.password);
+    router.push({ path: "/" });
+  } catch (error: any) {
+    setErrors("login-form", [error.message]);
+  }
 }
 function forgotPassword(data: any) {
   console.log("forgotPassword", data);
@@ -37,6 +39,7 @@ function forgotPassword(data: any) {
         <FormKit
           type="form"
           @submit="submit"
+          id="login-form"
           class="flex flex-col"
           submit-label="Login"
         >
@@ -59,11 +62,11 @@ function forgotPassword(data: any) {
           ></FormKit>
         </FormKit>
         <a
-            href="#"
-            v-on:click="forgotPassword"
-            class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
-            >Passwort vergessen?</a
-          >
+          href="#"
+          v-on:click="forgotPassword"
+          class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
+          >Passwort vergessen?</a
+        >
       </div>
     </div>
   </main>
