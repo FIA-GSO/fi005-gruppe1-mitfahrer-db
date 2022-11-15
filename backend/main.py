@@ -113,7 +113,7 @@ class Ride(db.Model):
         return {
             "id": self.id,
             "departureAddress": self.departutre_adress,
-            "arrivalAddress": self.departutre_adress,
+            "arrivalAddress": self.arrival_adress,
             "departureDateTime": self.departure_date_time.isoformat(),
             "started": self.ride_is_started,
             "cancelled": self.ride_is_canceled,

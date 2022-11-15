@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RideListing from "@/components/RideListing.vue";
 import { onMounted, reactive } from "vue";
 
 const data = reactive({
@@ -40,9 +41,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <main>
-    <div class="bg-white">
-      <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre>
+  <main class="flex items-center">
+    <div>
+      <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
+        Angebotene Fahrten
+      </h1>
+      <div class="bg-white w-96 rounded-md h-40">
+        <RideListing v-for="ride in data.rides" :ride="ride" />
+        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
+      </div>
+      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
+        Neue Fahrt anbieten
+      </button>
+    </div>
+    <div>
+      <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
+        Reservierte Fahrten
+      </h1>
+      <div class="bg-white w-96 rounded-md h-40">
+        <RideListing v-for="ride in data.rides" :ride="ride" />
+        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
+      </div>
+      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
+        Neue Fahrt suchen
+      </button>
     </div>
   </main>
 </template>
