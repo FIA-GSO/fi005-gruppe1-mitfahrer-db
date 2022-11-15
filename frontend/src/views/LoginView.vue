@@ -4,8 +4,9 @@ export default {
   methods: {
     async submit(data: any) {
       try {
-        const res = await fetch("http://localhost:5000/login", {
+        const res = await fetch("http://127.0.0.1:5000/login", {
           method: "POST",
+          credentials: "include",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",

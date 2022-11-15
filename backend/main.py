@@ -9,7 +9,11 @@ import bcrypt
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    supports_credentials=True,
+)
 app.config["DEBUG"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.secret_key = "super secret string"  # Change this!
@@ -90,6 +94,17 @@ def logout():
     db.session.commit()
     flask_login.logout_user()
     return {"status": "success"}
+
+
+@app.route("/user-info", methods=["GET"])
+@flask_login.login_required
+def user_info():
+    """Logout the current user."""
+    user = flask_login.current_user
+    mail = user.email
+    print(user.__dir__())
+    print(mail)
+    return {"status": "success", "user": {"email": user.email}}
 
 
 @app.route("/register", methods=["POST"])
