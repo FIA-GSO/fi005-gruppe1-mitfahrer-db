@@ -7,7 +7,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="text-lg px-3 p-2 flex flex-row justify-between items-center">
+  <div
+    class="text-lg px-3 p-2 flex flex-row justify-between items-center hover:bg-blue-50 hover:text-cyan-800 cursor-pointer"
+  >
     <span class="route">
       <span class="font-semibold">{{ props.ride.departureAddress }}</span>
       <font-awesome-icon icon="fa-solid fa-car-side" class="px-2" />

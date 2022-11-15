@@ -46,7 +46,7 @@ onMounted(() => {
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Angebotene Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40">
+      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
         <RideListing v-for="ride in data.rides" :ride="ride" />
         <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
@@ -58,7 +58,7 @@ onMounted(() => {
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Reservierte Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40">
+      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
         <RideListing v-for="ride in data.rides" :ride="ride" />
         <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
