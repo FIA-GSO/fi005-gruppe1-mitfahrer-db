@@ -61,7 +61,7 @@ export default {
         </RouterLink>
       </div>
     </header>
-    <div class="bg-white pt-8 h-full">
+    <div class="bg-white sm:pt-8 h-full">
       <div
         class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center">
         <FormKit type="form" @submit="submit" id="login-form" class="flex flex-col" submit-label="Login">

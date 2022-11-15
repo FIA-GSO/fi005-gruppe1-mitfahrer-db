@@ -9,7 +9,7 @@
         </RouterLink>
       </div>
     </header>
-    <div class="bg-white pt-8 h-full">
+    <div class="bg-white sm:pt-8 h-full">
       <div
         class="container p-12 bg-white xs:rounded-none sm:rounded sm:max-w-xl mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400"
       >
