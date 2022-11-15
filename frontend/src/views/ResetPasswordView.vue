@@ -4,7 +4,7 @@ export default {
   methods: {
     async submit(data: any) {
       try {
-        const res = await fetch("http://127.0.0.1:5000/register", {
+        const res = await fetch("http://127.0.0.1:5000/reset-password", {
           method: "POST",
           credentials: "include",
           headers: {
@@ -35,20 +35,17 @@ export default {
             break
         }
         this.$formkit.setErrors(
-          'register-form',
+          'reset-password-form',
           [errormsg]
         )
 
       } catch (error: any) {
         this.$formkit.setErrors(
-          'register-form',
+          'reset-password-form',
           // fetch() wirft nur error bei Netzwerk-Problemen
           ['Entschuldigung, der Server konnte nicht erreicht werden. Bitte versuchen Sie es später erneut.']
         )
       }
-
-    },
-    login () {
 
     }
   }
@@ -68,18 +65,15 @@ export default {
     <div class="bg-white pt-8 h-full">
       <div
         class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center">
-        <FormKit type="form" @submit="submit" id="register-form" class="flex flex-col" submit-label="Bestätigungslink senden">
+        <FormKit type="form" @submit="submit" id="register-form" class="flex flex-col" submit-label="Passwort zurücksetzen">
           <h1 class="font-sans dont-bold text-3xl text-center pb-8">
-            Registrieren
+            Passwort zurücksetzen
           </h1>
-          <p class="pb-8">Registrieren Sie sich bitte mit Ihrer GSO-E-Mail-Adresse. Sie bekommen anschließend eine Bestätigungs E-Mail. 
-            <br><br>Nach erfolgreicher Bestätigung per E-Mail können Sie Ihre Personendaten vervollständigen. 
-            </p>
-          <FormKit type="text" class="pb-8" name="email" validation="required|email" label="GSO-E-Mail-Adresse"></FormKit>
+          <p class="pb-8">Bitte geben Sie Ihre GSO-E-Mail-Adresse ein.
+          <br><br>Anschließend wird eine E-Mail mit weiteren Anweisungen, um ein neues Passwort zu erstellen, gesendet. </p>
+          <FormKit type="text" name="email" validation="required|email" label="GSO-E-Mail-Adresse"
+            class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
         </FormKit>
-        <span class="pb-4">Haben Sie schon einen Account? <a href="#" v-on:click="login"
-          class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500">Einloggen</a></span>
-        <FormKit type="button" label="Zurück" class="justify-self-end"></FormKit>
       </div>
     </div>
   </main>
