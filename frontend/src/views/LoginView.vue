@@ -7,15 +7,16 @@ const router = useRouter();
 
 async function submit(data: any) {
   console.log("Submit", data);
+  setErrors("login-form", [])
   try {
-    await userStore.login(data.email, data.password);
-    router.push({ path: "/" });
+    await userStore.login(data.email, data.password)
+    router.push({ path: "/" })
   } catch (error: any) {
-    setErrors("login-form", [error.message]);
+    setErrors("login-form", [error.message])
   }
 }
 function forgotPassword(data: any) {
-  console.log("forgotPassword", data);
+  console.log("forgotPassword", data)
 }
 </script>
 
@@ -65,8 +66,8 @@ function forgotPassword(data: any) {
           href="#"
           v-on:click="forgotPassword"
           class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500"
-          >Passwort vergessen?</a
-        >
+          >Passwort vergessen?
+        </a>
       </div>
     </div>
   </main>
