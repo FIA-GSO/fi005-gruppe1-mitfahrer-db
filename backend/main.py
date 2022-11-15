@@ -64,14 +64,14 @@ class User(db.Model):
 class Ride(db.Model):
     __tablename__ = "ride"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
     departutre_adress = db.Column(db.String)
     arrival_adress = db.Column(db.String)
     departure_date_time = db.Column(db.DateTime)
     ride_is_started = db.Column(db.Boolean)
     ride_is_canceled = db.Column(db.Boolean)
-    arrival_delay = db.Column(db.String, default="")  # Verspätungsspanne
+    arrival_delay = db.Column(db.String, default="", nullable=True)  # Verspätungsspanne
     price_per_kilometer = db.Column(db.Float)
     type_of_car = db.Column(db.String)
     available_passenger_seats = db.Column(db.Integer)
@@ -80,7 +80,11 @@ class Ride(db.Model):
     corona_rules_in_car = db.Column(db.Boolean)
     smoking_in_car = db.Column(db.Boolean)
 
-    user = db.relationship("User", foreign_keys=user_email, backref="rides")
+    user = db.relationship(
+        "User",
+        foreign_keys=user_email,
+        backref=db.backref("rides", order_by=departure_date_time),
+    )
 
     def get_ride_id(self):
         return self.ride_id
@@ -133,8 +137,10 @@ class Reservation(db.Model):
     user_email = db.Column(db.String, db.ForeignKey("user.email"), primary_key=True)
     ride_id = db.Column(db.Integer, db.ForeignKey("ride.id"), primary_key=True)
 
-    user = db.relationship("User", foreign_keys=user_email, backref="reservations")
     ride = db.relationship("Ride", foreign_keys=ride_id, backref="reservations")
+    user = db.relationship("User", foreign_keys=user_email, backref="reservations")
+
+    # user = db.relationship("User", foreign_keys=user_email, backref="reservations")
 
 
 @login_manager.user_loader
@@ -204,6 +210,7 @@ def register():
 
 
 @app.route("/rides/posted", methods=["GET"])
+@flask_login.login_required
 def get_posted_rides():
     user = flask_login.current_user
     rides = user.rides
@@ -211,10 +218,63 @@ def get_posted_rides():
 
 
 @app.route("/rides/reserved", methods=["GET"])
+@flask_login.login_required
 def get_reserved_rides():
+
     user = flask_login.current_user
-    rides = [reservation.ride for reservation in user.reservations]
+
+    reservations = (
+        db.session.query(Reservation)
+        .join(Ride)
+        .filter(Reservation.user_email == user.email)
+        .order_by(Ride.departure_date_time)
+        .all()
+    )
+
+    for reservation in reservations:
+        print(reservation.ride)
+
+    # print(rides)
+
+    # print(
+    #     db.session.query(Reservation, Ride)
+    #     .filter(Reservation.user_email == user.email)
+    #     .filter(Reservation.ride_id == Ride.id)
+    #     .all()
+    # )
+
+    # print(db.session.query(Reservation).order_by(Reservation.ride.departure_date_time))
+
+    # reservations = user.reservations.order_by(ride.departure_date_time)
+    rides = [reservation.ride for reservation in reservations]
     return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
+
+
+@app.route("/rides/create", methods=["POST"])
+@flask_login.login_required
+def create_ride():
+    other = request.json.get("other")
+    ride = Ride(
+        user_email=flask_login.current_user.email,
+        departutre_adress=request.json.get("departureAddress"),
+        arrival_adress=request.json.get("arrivalAddress"),
+        departure_date_time=datetime.fromisoformat(
+            request.json.get("departureDateTime")
+        ),
+        ride_is_started=False,
+        ride_is_canceled=False,
+        arrival_delay="",
+        price_per_kilometer=request.json.get("pricePerKilometer"),
+        type_of_car=request.json.get("carType"),
+        available_passenger_seats=request.json.get("availableSeatCount"),
+        reserved_passenger_seats=0,
+        animal_free_car="pets" in other,
+        corona_rules_in_car="coronaHygiene" in other,
+        smoking_in_car="smoking" in other,
+    )
+    db.session.add(ride)
+    db.session.commit()
+    return {"status": "success", "ride": ride.to_dict()}
 
 
 def create_mock_ride():
@@ -241,6 +301,10 @@ def create_mock_reservation():
     return Reservation(user_email="a@b.de", ride_id=1)
 
 
+def create_mock_reservation2():
+    return Reservation(user_email="a@b.de", ride_id=2)
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -263,4 +327,8 @@ if __name__ == "__main__":
             db.session.add(ride)
             db.session.add(reservation)
             db.session.commit()
+    # with app.app_context():
+    #     reservation2 = create_mock_reservation2()
+    #     db.session.add(reservation2)
+    #     db.session.commit()
     app.run(debug=True)

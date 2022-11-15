@@ -3,7 +3,8 @@ import RideListing from "@/components/RideListing.vue";
 import { onMounted, reactive } from "vue";
 
 const data = reactive({
-  rides: [],
+  postedRides: [],
+  reservedRides: [],
 });
 
 async function getPostedRides() {
@@ -17,7 +18,7 @@ async function getPostedRides() {
     return r.json();
   });
   console.log("posted rides response", response);
-  data.rides = response.rides;
+  data.postedRides = response.rides;
 }
 
 async function getReservedRides() {
@@ -31,7 +32,7 @@ async function getReservedRides() {
     return r.json();
   });
   console.log("reserved rides response", response);
-  data.rides = response.rides;
+  data.reservedRides = response.rides;
 }
 
 onMounted(() => {
@@ -47,7 +48,7 @@ onMounted(() => {
         Angebotene Fahrten
       </h1>
       <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
-        <RideListing v-for="ride in data.rides" :ride="ride" />
+        <RideListing v-for="ride in data.postedRides" :ride="ride" />
         <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
       <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
@@ -59,7 +60,7 @@ onMounted(() => {
         Reservierte Fahrten
       </h1>
       <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
-        <RideListing v-for="ride in data.rides" :ride="ride" />
+        <RideListing v-for="ride in data.reservedRides" :ride="ride" />
         <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
       <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
