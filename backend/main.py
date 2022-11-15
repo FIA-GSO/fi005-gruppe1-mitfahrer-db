@@ -4,10 +4,11 @@ from flask import (
     request,
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import select
 import flask_login
 import bcrypt
 from flask_cors import CORS
-from datetime import date
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(
@@ -60,52 +61,69 @@ class User(db.Model):
         return False
 
 
-# class Ride(db.Model):
+class Ride(db.Model):
 
-#     __tablename__ = "ride"
+    __tablename__ = "ride"
 
-#     ride_id = db.Column(db.Integer, primary_key=True)
-#     user_email = db.Column(db.String, db.ForeignKey("user.email"))
-#     departutre_adress = db.Column(db.String)
-#     arrival_adress = db.Column(db.String)
-#     departure_date_time = db.Column(db.DateTime)
-#     ride_is_started = db.Column(db.Boolean)
-#     ride_is_canceled = db.Column(db.Boolean)
-#     arrival_delay = db.Column(db.String, default="")  # Verspätungsspanne
-#     price_per_kilometer = db.Column(db.Float)
-#     type_of_car = db.Column(db.String)
-#     available_passenger_seats = db.Column(db.Integer)
-#     reserved_passenger_seats = db.Column(db.Integer)
-#     animal_free_car = db.Column(db.Boolean)
-#     corona_rules_in_car = db.Column(db.Boolean)
-#     smoking_in_car = db.Column(db.Boolean)
+    ride_id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String, db.ForeignKey("user.email"))
+    departutre_adress = db.Column(db.String)
+    arrival_adress = db.Column(db.String)
+    departure_date_time = db.Column(db.DateTime)
+    ride_is_started = db.Column(db.Boolean)
+    ride_is_canceled = db.Column(db.Boolean)
+    arrival_delay = db.Column(db.String, default="")  # Verspätungsspanne
+    price_per_kilometer = db.Column(db.Float)
+    type_of_car = db.Column(db.String)
+    available_passenger_seats = db.Column(db.Integer)
+    reserved_passenger_seats = db.Column(db.Integer)
+    animal_free_car = db.Column(db.Boolean)
+    corona_rules_in_car = db.Column(db.Boolean)
+    smoking_in_car = db.Column(db.Boolean)
 
-#     def get_ride_id(self):
-#         return self.ride_id
+    def get_ride_id(self):
+        return self.ride_id
 
-#     def get_departure_adress(self):
-#         return self.departutre_adress
+    def get_departure_adress(self):
+        return self.departutre_adress
 
-#     def get_arrival_adress(self):
-#         return self.arrival_adress
+    def get_arrival_adress(self):
+        return self.arrival_adress
 
-#     def is_started(self):
-#         return self.ride_is_started
+    def is_started(self):
+        return self.ride_is_started
 
-#     def is_canceled(self):
-#         return self.ride_is_canceled
+    def is_canceled(self):
+        return self.ride_is_canceled
 
-#     def get_price_per_kilometer(self):
-#         return self.price_per_kilometer
+    def get_price_per_kilometer(self):
+        return self.price_per_kilometer
 
-#     def get_type_of_car(self):
-#         return self.type_of_car
+    def get_type_of_car(self):
+        return self.type_of_car
 
-#     def get_free_passenger_seats(self):
-#         self.free_passenger_seats = (
-#             self.available_passenger_seats - self.reserved_passenger_seats
-#         )
-#         return self.free_passenger_seats
+    def get_free_passenger_seats(self):
+        self.free_passenger_seats = (
+            self.available_passenger_seats - self.reserved_passenger_seats
+        )
+        return self.free_passenger_seats
+
+    def to_dict(self):
+        return {
+            "id": self.ride_id,
+            "departureAddress": self.departutre_adress,
+            "arrivalAddress": self.departutre_adress,
+            "departureDateTime": self.departure_date_time.isoformat(),
+            "started": self.ride_is_started,
+            "cancelled": self.ride_is_canceled,
+            "arrivalDelay": self.arrival_delay,
+            "pricePerKilometer": self.price_per_kilometer,
+            "carType": self.type_of_car,
+            "availableSeats": self.available_passenger_seats,
+            "animalFree": self.animal_free_car,
+            "coronaRules": self.corona_rules_in_car,
+            "smoking": self.smoking_in_car,
+        }
 
 
 @login_manager.user_loader
@@ -174,24 +192,47 @@ def register():
     return {"status": "success"}
 
 
-# def create_mock_ride():
-#     ride = Ride(
-#         ride_id = 1
-#         user_email = 'a@b.de'
-#         departutre_adress = 'Bonn'
-#         arrival_adress = 'GSO'
-#         departure_date_time = db.Column(db.DateTime)
-#         ride_is_started = db.Column(db.Boolean)
-#         ride_is_canceled = db.Column(db.Boolean)
-#         arrival_delay = db.Column(db.String, default='') #Verspätungsspanne
-#         price_per_kilometer = db.Column(db.Float)
-#         type_of_car = db.Column(db.String)
-#         available_passenger_seats = db.Column(db.Integer)
-#         reserved_passenger_seats = db.Column(db.Integer)
-#         animal_free_car = db.Column(db.Boolean)
-#         corona_rules_in_car = db.Column(db.Boolean)
-#         smoking_in_car = db.Column(db.Boolean)
-#     )
+import json
+
+
+@app.route("/rides/posted", methods=["GET"])
+def get_posted_rides():
+    user = flask_login.current_user
+    mail = user.email
+
+    rides = db.session.execute(
+        db.select(Ride)
+        .where(Ride.user_email == mail)
+        .order_by(Ride.departure_date_time)
+    ).scalars()
+
+    return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
+    # for ride in rides:
+    #     print(ride.to_dict())
+    # # print(json.dumps(rides))
+    # print(rides)
+
+    # return {"status": "success"}
+
+
+def create_mock_ride():
+    return Ride(
+        ride_id=1,
+        user_email="a@b.de",
+        departutre_adress="Bonn",
+        arrival_adress="GSO",
+        departure_date_time=datetime.fromisoformat("2022-11-20T08:30:00+01:00"),
+        ride_is_started=False,
+        ride_is_canceled=False,
+        arrival_delay="Verspätungsspanne",
+        price_per_kilometer=1.23,
+        type_of_car="Autotyp",
+        available_passenger_seats=3,
+        reserved_passenger_seats=1,
+        animal_free_car=False,
+        corona_rules_in_car=True,
+        smoking_in_car=True,
+    )
 
 
 @app.route("/")
@@ -210,10 +251,8 @@ if __name__ == "__main__":
                 email=email,
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
             )
-            # ride_id = "1"
-            # rider = email
-            # ride = Ride(ride_id=ride_id, user_email=rider)
+            ride = create_mock_ride()
             db.session.add(user)
-            # db.session.add(ride)
+            db.session.add(ride)
             db.session.commit()
     app.run(debug=True)
