@@ -1,17 +1,12 @@
 <script setup lang="ts">
-// import TheWelcome from '../components/TheWelcome.vue'
-
+import { useRouter, useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
+const userStore = useUserStore();
+const router = useRouter();
 async function submit(data: any) {
   console.log("Submit", data);
-  await fetch("http://127.0.0.1:5000/login", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  await userStore.login(data.email, data.password);
+  router.push({ path: "/" });
 }
 function forgotPassword(data: any) {
   console.log("forgotPassword", data);

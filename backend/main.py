@@ -80,7 +80,7 @@ def login():
             db.session.add(user)
             db.session.commit()
             flask_login.login_user(user, remember=True)
-            return {"status": "success"}
+            return {"status": "success", "user": {"email": user.email}}
     return {"status": "fail"}, 403
 
 
