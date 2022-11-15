@@ -49,11 +49,13 @@ onMounted(() => {
       </h1>
       <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
         <RideListing v-for="ride in data.postedRides" :ride="ride" />
-        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
-      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
-        Neue Fahrt anbieten
-      </button>
+      <RouterLink
+        to="/rides/create"
+        class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
+      >
+        Fahrt anbieten
+      </RouterLink>
     </div>
     <div>
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
@@ -61,11 +63,13 @@ onMounted(() => {
       </h1>
       <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
         <RideListing v-for="ride in data.reservedRides" :ride="ride" />
-        <!-- <pre v-for="ride in data.rides">{{ JSON.stringify(ride, null, 2) }}</pre> -->
       </div>
-      <button class="bg-white rounded p-2 py-1 w-full border border-black mt-1">
+      <RouterLink
+        to="/rides/search"
+        class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
+      >
         Neue Fahrt suchen
-      </button>
+      </RouterLink>
     </div>
   </main>
 </template>

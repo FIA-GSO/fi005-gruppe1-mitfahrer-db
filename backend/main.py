@@ -4,11 +4,11 @@ from flask import (
     request,
 )
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select
 import flask_login
 import bcrypt
 from flask_cors import CORS
 from datetime import datetime
+import AdressConverter
 
 app = Flask(__name__)
 CORS(
@@ -68,6 +68,12 @@ class Ride(db.Model):
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
 
     departutre_adress = db.Column(db.String)
+
+    departutre_adress_longitude = db.Column(db.Float)
+    departutre_adress_latitude = db.Column(db.Float)
+    arrival_adress_longitude = db.Column(db.Float)
+    arrival_adress_latitude = db.Column(db.Float)
+
     arrival_adress = db.Column(db.String)
     departure_date_time = db.Column(db.DateTime)
 
@@ -121,6 +127,14 @@ class Ride(db.Model):
             "departureAddress": self.departutre_adress,
             "arrivalAddress": self.arrival_adress,
             "departureDateTime": self.departure_date_time.isoformat(),
+            "departureCoordinates": {
+                "latitude": self.departutre_adress_latitude,
+                "longitude": self.departutre_adress_longitude,
+            },
+            "arrivalCoordinates": {
+                "latitude": self.arrival_adress_latitude,
+                "longitude": self.arrival_adress_longitude,
+            },
             "started": self.ride_is_started,
             "cancelled": self.ride_is_canceled,
             "arrivalDelay": self.arrival_delay,
@@ -256,6 +270,13 @@ def get_reserved_rides():
 @app.route("/rides/create", methods=["POST"])
 @flask_login.login_required
 def create_ride():
+
+    departutre_adress = request.json.get("departureAddress")
+    arrival_adress = request.json.get("arrivalAddress")
+
+    departure_coordinates = AdressConverter.get_mapbox_coordinates(departutre_adress)
+    arrival_coordinates = AdressConverter.get_mapbox_coordinates(arrival_adress)
+
     other = request.json.get("other")
     ride = Ride(
         user_email=flask_login.current_user.email,
@@ -264,6 +285,10 @@ def create_ride():
         departure_date_time=datetime.fromisoformat(
             request.json.get("departureDateTime")
         ),
+        departutre_adress_longitude=departure_coordinates["longitude"],
+        departutre_adress_latitude=departure_coordinates["latitude"],
+        arrival_adress_longitude=arrival_coordinates["longitude"],
+        arrival_adress_latitude=arrival_coordinates["latitude"],
         ride_is_started=False,
         ride_is_canceled=False,
         arrival_delay="",
