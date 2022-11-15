@@ -90,7 +90,7 @@ class Ride(db.Model):
     def is_canceled(self):
         return self.ride_is_canceled
 
-    def price_per_kilometer(self):
+    def get_price_per_kilometer(self):
         return self.price_per_kilometer
 
     def get_type_of_car(self):
@@ -172,6 +172,13 @@ if __name__ == "__main__":
                 email=email,
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
             )
+            ride_id = '1'
+            rider = email
+            ride = Ride(
+                ride_id = ride_id,
+                user_email=rider
+            )
             db.session.add(user)
+            db.session.add(ride)
             db.session.commit()
     app.run(debug=True)
