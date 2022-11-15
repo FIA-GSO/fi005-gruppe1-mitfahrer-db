@@ -62,7 +62,6 @@ class User(db.Model):
 
 
 class Ride(db.Model):
-
     __tablename__ = "ride"
 
     ride_id = db.Column(db.Integer, primary_key=True)
@@ -80,6 +79,8 @@ class Ride(db.Model):
     animal_free_car = db.Column(db.Boolean)
     corona_rules_in_car = db.Column(db.Boolean)
     smoking_in_car = db.Column(db.Boolean)
+
+    user = db.relationship("User", foreign_keys=user_email, backref="rides")
 
     def get_ride_id(self):
         return self.ride_id
@@ -192,27 +193,11 @@ def register():
     return {"status": "success"}
 
 
-import json
-
-
 @app.route("/rides/posted", methods=["GET"])
 def get_posted_rides():
     user = flask_login.current_user
-    mail = user.email
-
-    rides = db.session.execute(
-        db.select(Ride)
-        .where(Ride.user_email == mail)
-        .order_by(Ride.departure_date_time)
-    ).scalars()
-
+    rides = user.rides
     return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
-    # for ride in rides:
-    #     print(ride.to_dict())
-    # # print(json.dumps(rides))
-    # print(rides)
-
-    # return {"status": "success"}
 
 
 def create_mock_ride():
