@@ -274,14 +274,19 @@ def create_ride():
     departutre_adress = request.json.get("departureAddress")
     arrival_adress = request.json.get("arrivalAddress")
 
-    departure_coordinates = AdressConverter.get_mapbox_coordinates(departutre_adress)
-    arrival_coordinates = AdressConverter.get_mapbox_coordinates(arrival_adress)
+    (
+        departure_coordinates,
+        departure_place_name,
+    ) = AdressConverter.get_mapbox_coordinates(departutre_adress)
+    arrival_coordinates, arrival_place_name = AdressConverter.get_mapbox_coordinates(
+        arrival_adress
+    )
 
     other = request.json.get("other")
     ride = Ride(
         user_email=flask_login.current_user.email,
-        departutre_adress=request.json.get("departureAddress"),
-        arrival_adress=request.json.get("arrivalAddress"),
+        departutre_adress=departure_place_name,
+        arrival_adress=arrival_place_name,
         departure_date_time=datetime.fromisoformat(
             request.json.get("departureDateTime")
         ),
