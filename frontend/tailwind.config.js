@@ -7,7 +7,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'gso-blue': '#5B9BD5'
+        'gso-blue': '#5B9BD5',
+        'backdrop': 'rgba(0,0,0,0.3)'
       }
     },
     fontFamily: {

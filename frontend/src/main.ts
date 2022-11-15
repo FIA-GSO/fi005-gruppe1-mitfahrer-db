@@ -23,8 +23,9 @@ app.use(createPinia())
 app.use(router)
 
 // Setup Font Awesome and add icons to the library
-import { faCarSide } from '@fortawesome/free-solid-svg-icons'
+import { faCarSide, faCircleUser } from '@fortawesome/free-solid-svg-icons'
 library.add(faCarSide)
+library.add(faCircleUser)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')
