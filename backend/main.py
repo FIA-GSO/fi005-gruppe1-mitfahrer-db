@@ -55,6 +55,52 @@ class User(db.Model):
         return False
 
 
+class Ride(db.Model):
+
+    __tablename__ = 'ride'
+
+    ride_id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String, db.ForeignKey('user.email'))
+    departutre_adress = db.Column(db.String)
+    arrival_adress = db.Column(db.String)
+    departure_date_time = db.Column(db.DateTime)
+    ride_is_started = db.Column(db.Boolean)
+    ride_is_canceled = db.Column(db.Boolean)
+    arrival_delay = db.Column(db.String, default='') #Verspätungsspanne
+    price_per_kilometer = db.Column(db.Float)
+    type_of_car = db.Column(db.String)
+    available_passenger_seats = db.Column(db.Integer)
+    reserved_passenger_seats = db.Column(db.Integer)
+    animal_free_car = db.Column(db.Boolean)
+    corona_rules_in_car = db.Column(db.Boolean)
+    smoking_in_car = db.Column(db.Boolean)
+
+    def get_ride_id(self):
+        return self.ride_id
+
+    def get_departure_adress(self):
+        return self.departutre_adress
+
+    def get_arrival_adress(self):
+        return self.arrival_adress
+
+    def is_started(self):
+        return self.ride_is_started
+
+    def is_canceled(self):
+        return self.ride_is_canceled
+
+    def price_per_kilometer(self):
+        return self.price_per_kilometer
+
+    def get_type_of_car(self):
+        return self.type_of_car
+
+    def get_free_passenger_seats(self):
+        self.free_passenger_seats = self.available_passenger_seats - self.reserved_passenger_seats
+        return self.free_passenger_seats
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     """Given *user_id*, return the associated User object.
