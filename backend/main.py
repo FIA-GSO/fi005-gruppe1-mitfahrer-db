@@ -66,9 +66,13 @@ class Ride(db.Model):
 
     ride_id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
-    departutre_adress = db.Column(db.String)
-    arrival_adress = db.Column(db.String)
+
+    departutre_adress_longitude = db.Column(db.Float)
+    departutre_adress_latitude = db.Column(db.Float)
+    arrival_adress_longitude = db.Column(db.Float)
+    arrival_adress_latitude = db.Column(db.Float)
     departure_date_time = db.Column(db.DateTime)
+
     ride_is_started = db.Column(db.Boolean)
     ride_is_canceled = db.Column(db.Boolean)
     arrival_delay = db.Column(db.String, default="")  # Verspätungsspanne
