@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getNode, setErrors } from "@formkit/core";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
@@ -7,31 +8,10 @@ const router = useRouter();
 async function submit(data: any) {
   console.log("Submit", data);
   try {
-    const res = await userStore.login(data.email, data.password);
+    await userStore.login(data.email, data.password);
     router.push({ path: "/" });
-
-    let errormsg: string = "";
-    switch (res.status) {
-      case 403:
-        errormsg =
-          "Entschuldigung, das hat nicht geklappt. Bitte prüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.";
-        break;
-      case 500:
-      case 502:
-      case 404:
-        errormsg =
-          "Entschldigung, er Server kann die Anfrage im Moment nicht bearbeiten. Bitte versuchen Sie es später erneut.";
-        break;
-    }
-    this.$formkit.setErrors("login-form", [errormsg]);
   } catch (error: any) {
-    this.$formkit.setErrors(
-      "login-form",
-      // fetch() wirft nur error bei Netzwerk-Problemen
-      [
-        "Entschuldigung, der Server konnte nicht erreicht werden. Bitte versuchen Sie es später erneut.",
-      ]
-    );
+    setErrors("login-form", [error.message]);
   }
 }
 function forgotPassword(data: any) {
