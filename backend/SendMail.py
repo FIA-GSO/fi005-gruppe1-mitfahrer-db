@@ -11,3 +11,14 @@ def send_registry_mail(to, registry_link):
             "subject": "Bitte bestätigen Sie Ihre E-Mail-Adresse",
             "template": "bestaetigungsmail",
             "h:X-Mailgun-Variables": """{"test": "%s"}""" % registry_link})
+
+
+def send_new_password_mail(to, new_password_link):
+    return requests.post(
+        "https://api.mailgun.net/v3/sandboxdddd85465af748c8b8ebdb9a4b3c0087.mailgun.org/messages",
+        auth=("api", api_key),
+        data={"from": "GSO Mitfahrer-Datenbank <mailgun@sandboxdddd85465af748c8b8ebdb9a4b3c0087.mailgun.org>",
+            "to": [to],
+            "subject": "Passwort vergessen?",
+            "template": "passwortvergessen",
+            "h:X-Mailgun-Variables": """{"link": "%s"}""" % new_password_link})
