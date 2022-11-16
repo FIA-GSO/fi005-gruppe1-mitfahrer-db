@@ -20,7 +20,7 @@ def get_mapbox_coordinates(adress_to_search):
     return coordinates
 
 
-def get_mapbox_adress(lon, lat):
-    response = geocoder.reverse(lon=lon, lat=lat)
+def get_mapbox_adress(lon, lat, languages=["de"]):
+    response = geocoder.reverse(lon=lon, lat=lat, languages=languages)
     first = response.geojson()["features"][0]
     return first["place_name"]
