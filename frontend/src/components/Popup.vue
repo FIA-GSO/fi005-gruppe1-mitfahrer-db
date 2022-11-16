@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-
-var isShown = ref(true)
+var isShown = ref(false)
 
 function showPopup() {
     isShown.value = true
