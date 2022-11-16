@@ -4,7 +4,6 @@ import RootView from '../views/RootView.vue'
 import RegisterDetailsView from '../views/RegisterDetailsView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
-import UserHelpView from '@/views/UserHelpView.vue'
 import CreateRideView from '@/views/CreateRideView.vue'
 import SearchRideView from '@/views/SearchRideView.vue'
 import RideDetailView from '@/views/RideDetailView.vue'
@@ -31,10 +30,6 @@ const router = createRouter({
       component: ResetPasswordView
     },
     {
-      path: '/help',
-      component: UserHelpView
-    },
-    {
       path: '/register-confirm',
       component: RegisterDetailsView
     },
@@ -53,7 +48,7 @@ const router = createRouter({
     {
       path: '/user-details',
       component: UserDetailsView
-    },
+    }
   ]
 })
 
