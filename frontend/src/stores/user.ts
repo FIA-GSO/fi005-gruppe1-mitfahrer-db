@@ -71,10 +71,14 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const initialized = ref(false);
-  getUser().then(() => {
-    initialized.value = true
-  });
-  
-  return { initialized, user, login, logout }
+
+  const onInitialized = new Promise<void>(resolve => {
+    getUser().then(() => {
+      initialized.value = true
+      resolve();
+    });
+  })
+
+  return { initialized, user, login, logout, onInitialized }
 })
 
