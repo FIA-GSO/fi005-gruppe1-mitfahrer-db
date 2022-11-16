@@ -1,27 +1,14 @@
 <script setup lang="ts">
+import { API } from "@/utils/utils";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 async function submit(data: any) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/register", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: data.email,
-      }),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error(`${r.status}`);
-      }
-      return r.json();
-    });
-    const authToken = response.tempAuthToken;
+    const response = await API("register", "POST", JSON.stringify({email: data.email}))
+    
+    const authToken = (await response.json()).tempAuthToken;
     router.push({
       path: "/register-confirm",
       query: {

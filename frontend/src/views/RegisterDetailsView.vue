@@ -1,54 +1,22 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { API } from "@/utils/utils";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
 async function confirmRegistration() {
-  try {
-    const response = await fetch(
-      "http://127.0.0.1:5000/check-registration?" +
-        new URLSearchParams({
-          token: route.query.token as string,
-        }),
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((r) => {
-      if (!r.ok) {
-        throw new Error(`${r.status}`);
-      }
-      return r.json();
-    });
-    console.log(response);
-    return response;
-  } catch (e) {}
+  const response = await API(`check-registration?token=${route.query.token}`)
+  console.log(response);
+  return response;
 }
 confirmRegistration();
 async function submit(formData: any) {
   formData.token = route.query.token;
-  const response = await fetch("http://127.0.0.1:5000/register-confirm", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  }).then((r) => {
-    if (!r.ok) {
-      throw new Error(`${r.status}`);
-    }
-    return r.json();
-  });
+  const response = await API("register-confirm", "POST", JSON.stringify(formData))
   console.log(response);
-  userStore.user = response.user;
+  userStore.user = (await response.json()).user;
   router.push({
     path: "/",
   });
@@ -58,32 +26,21 @@ async function submit(formData: any) {
 <template>
   <div class="bg-white grow w-screen flex items-center justify-center">
     <div
-      class="container bg-white xs:rounded-none sm:rounded xs:w-screen sm:w-128 center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
-    >
+      class="container bg-white xs:rounded-none sm:rounded xs:w-screen sm:w-128 center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center">
       <FormKit type="form" submit-label="Speichern" @submit="submit">
         <h1 class="font-sans dont-bold text-3xl text-center pb-8">
           Personendaten vervollständigen
         </h1>
         <div class="flex flex-col sm:flex-row justify-between">
           <div class="flex flex-col w-full sm:w-56">
-            <FormKit
-              type="text"
-              label="Name"
-              input-class="w-44 min-w-full"
-              name="lastName"
-            />
+            <FormKit type="text" label="Name" input-class="w-44 min-w-full" name="lastName" />
             <FormKit type="text" label="Vorname" name="firstName" />
             <FormKit type="password" label="Passwort" name="password" />
             <FormKit type="password" label="Passwort wiederholen" />
           </div>
           <div class="flex flex-col w-full sm:w-56">
             <FormKit type="date" label="Geburtsdatum" name="birthdate" />
-            <FormKit
-              type="select"
-              label="Geschlecht"
-              :options="['männlich', 'weiblich', 'divers']"
-              name="gender"
-            />
+            <FormKit type="select" label="Geschlecht" :options="['männlich', 'weiblich', 'divers']" name="gender" />
             <FormKit type="file" label="Profilbild" />
           </div>
         </div>

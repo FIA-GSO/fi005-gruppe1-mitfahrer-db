@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { API } from "@/utils/utils";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { onMounted, reactive } from "vue";
@@ -14,25 +15,10 @@ const data: DetailData = reactive({
 });
 
 async function getRide(id: string): Promise<any> {
-  const response = await fetch(
-    "http://127.0.0.1:5000/rides/detail?" + new URLSearchParams({ id }),
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }
-  ).then((r) => {
-    if (!r.ok) {
-      throw new Error();
-    }
-    return r.json();
-  });
+  const response = await API(`http://127.0.0.1:5000/rides/detail?${id}`)
   console.log("ride detail response", response);
-  data.ride = response.ride;
-  return response.ride;
+  data.ride = (await response.json()).ride;
+  return (await response.json()).ride;
 }
 
 async function createMap(coordinates: any) {

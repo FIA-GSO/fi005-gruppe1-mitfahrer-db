@@ -1,26 +1,16 @@
 <script lang="ts">
+import { API } from '@/utils/utils';
+
 // import TheWelcome from '../components/TheWelcome.vue'
 export default {
   methods: {
     async submit(data: any) {
       try {
-        const res = await fetch("http://127.0.0.1:5000/reset-password", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (res.ok) {
-          //TODO: Handle session store + redirect
-          return
-        }
+        const response = await API("reset-password", "POST", JSON.stringify(data))
+        
 
         let errormsg: string = ''
-        switch (res.status) {
+        switch (response.status) {
           case 400:
             errormsg = "Entschuldigung, das hat nicht geklappt. Bitte geben Sie eine gültige GSO-E-Mail-Adresse ein."
             break
@@ -42,7 +32,6 @@ export default {
       } catch (error: any) {
         this.$formkit.setErrors(
           'reset-password-form',
-          // fetch() wirft nur error bei Netzwerk-Problemen
           ['Entschuldigung, der Server konnte nicht erreicht werden. Bitte versuchen Sie es später erneut.']
         )
       }
