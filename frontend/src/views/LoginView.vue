@@ -51,7 +51,7 @@ function forgotPassword(data: any) {
           ></FormKit>
         </FormKit>
         <RouterLink
-          to="/reset-password"
+          :to="{name: 'resetPassword'}"
           v-on:click="forgotPassword"
           class="text-black text-center underline outline-none hover:text-gray-600 focus:text-gray-500 mb-8"
           >Passwort vergessen?
