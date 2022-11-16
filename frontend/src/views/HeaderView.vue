@@ -33,7 +33,7 @@ function logout() {
         <div class="flex flex-col bg-white text-black items-end sm:items-center w-screen sm:w-64 sm:rounded-bl-lg">
           <div class="flex items-center w-full h-16 mb-4">
             <div class="grow text-right">
-              <h1 class="text-lg">{{userStore.user.first_name}}</h1>
+              <h1 class="text-lg">{{userStore.user.firstName}}</h1>
               <h1 class="text-xs">{{userStore.user.email}}</h1>
             </div>
             <a href="http://127.0.0.1:5000/help.pdf" @click="$refs.userPopup.hidePopup()" class="p-2 text-2xl rounded-full w-12 h-12">
