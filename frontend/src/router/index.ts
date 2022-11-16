@@ -6,6 +6,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import CreateRideView from '@/views/CreateRideView.vue'
 import SearchRideView from '@/views/SearchRideView.vue'
+import RideDetailView from '@/views/RideDetailView.vue'
 import UserDetailsView from '@/views/UserDetailsView.vue'
 
 const router = createRouter({
@@ -39,6 +40,10 @@ const router = createRouter({
     {
       path: '/rides/search',
       component: SearchRideView
+    },
+    {
+      path: '/rides/detail/:id',
+      component: RideDetailView
     },
     {
       path: '/user-details',
