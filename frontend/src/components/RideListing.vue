@@ -7,7 +7,7 @@ const props = defineProps({
   },
 });
 const flip = computed(() => {
-  return props.ride?.direction === "to";
+  return props.ride?.direction === "from";
 });
 const addressLines = (address: string) => {
   return address.split(", ");
