@@ -54,10 +54,10 @@ onMounted(() => {
       </h1>
       <div class="bg-white w-[600px] rounded-md overflow-hidden">
         <RouterLink
-          v-for="ride in data.postedRides"
+          v-for="(ride, i) in data.postedRides"
           :to="'/rides/detail/' + ride.id"
         >
-          <RideListing :ride="ride" />
+          <RideListing :ride="ride" :flip="i % 2 === 0" />
         </RouterLink>
       </div>
       <RouterLink
