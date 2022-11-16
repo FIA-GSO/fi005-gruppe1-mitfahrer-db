@@ -16,7 +16,7 @@ def get_mapbox_placename(adress_to_search):
 
 def get_mapbox_coordinates(adress_to_search, languages=["de"]):
     response = geocoder.forward(adress_to_search, limit=1, languages=languages)
-    print(json.dumps(response.geojson()))
+    # print(json.dumps(response.geojson()))
     first = response.geojson()["features"][0]
     coordinates = {}
     coordinates["latitude"] = first["geometry"]["coordinates"][1]

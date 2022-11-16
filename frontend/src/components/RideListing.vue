@@ -45,5 +45,8 @@ const addressLines = (address: string) => {
         })
       }}
     </span>
+    <span v-if="props.ride.distance != null">
+      {{ (props.ride.distance / 1000).toFixed(2) }} km
+    </span>
   </div>
 </template>

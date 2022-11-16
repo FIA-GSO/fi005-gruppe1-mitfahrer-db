@@ -7,8 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 import flask_login
 import bcrypt
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
 import AdressConverter
+from geopy.distance import geodesic as GD
 
 app = Flask(__name__)
 CORS(
@@ -251,18 +252,6 @@ def get_reserved_rides():
     for reservation in reservations:
         print(reservation.ride)
 
-    # print(rides)
-
-    # print(
-    #     db.session.query(Reservation, Ride)
-    #     .filter(Reservation.user_email == user.email)
-    #     .filter(Reservation.ride_id == Ride.id)
-    #     .all()
-    # )
-
-    # print(db.session.query(Reservation).order_by(Reservation.ride.departure_date_time))
-
-    # reservations = user.reservations.order_by(ride.departure_date_time)
     rides = [reservation.ride for reservation in reservations]
     return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
 
@@ -310,13 +299,52 @@ def create_ride():
     return {"status": "success", "ride": ride.to_dict()}
 
 
-def create_mock_ride():
+@app.route("/rides/search", methods=["GET"])
+@flask_login.login_required
+def search_rides():
+    print(request.args)
+    the_date = date.fromisoformat(request.args.get("date"))
+    time_start = time.fromisoformat(request.args.get("timeRangeStart"))
+    time_end = time.fromisoformat(request.args.get("timeRangeEnd"))
+    start_range = datetime.combine(the_date, time_start)
+    end_range = datetime.combine(the_date, time_end)
+
+    input_place_name = request.args.get("placeName")
+    coordinates, place_name = AdressConverter.get_mapbox_coordinates(input_place_name)
+
+    print("in", coordinates, place_name)
+
+    rides = Ride.query.filter(
+        (Ride.departure_date_time >= start_range)
+        & (Ride.departure_date_time <= end_range)
+    ).all()
+
+    ride_distances = {}
+    for ride in rides:
+        ride_distances[ride.id] = GD(
+            (ride.departutre_adress_latitude, ride.departutre_adress_longitude),
+            (coordinates["latitude"], coordinates["longitude"]),
+        )
+        print(ride, ride_distances[ride.id])
+
+    sorted_rides = sorted(rides, key=lambda ride: ride_distances[ride.id].meters)
+
+    ride_dicts = [
+        ride.to_dict() | {"distance": ride_distances[ride.id].meters}
+        for ride in sorted_rides
+    ]
+
+    return {"status": "success", "rides": ride_dicts}
+
+
+def create_mock_ride(label, date_time, lat, long):
     return Ride(
-        id=1,
         user_email="a@b.de",
-        departutre_adress="Bonn",
-        arrival_adress="GSO",
-        departure_date_time=datetime.fromisoformat("2022-11-20T08:30:00+01:00"),
+        departutre_adress=label,
+        departutre_adress_longitude=long,
+        departutre_adress_latitude=lat,
+        arrival_adress=label,
+        departure_date_time=date_time,
         ride_is_started=False,
         ride_is_canceled=False,
         arrival_delay="Verspätungsspanne",
@@ -343,25 +371,49 @@ def index():
     return render_template("index.html")
 
 
+resolved_places = [
+    (
+        {"latitude": 50.9426125, "longitude": 6.9585985},
+        "Köln Hauptbahnhof, Trankgasse 11, Köln, Nordrhein-Westfalen 50667, Deutschland",
+    ),
+    (
+        {"latitude": 50.93641065, "longitude": 6.99835925},
+        "Trimbornstraße, 51105 Köln, Deutschland",
+    ),
+    (
+        {"latitude": 50.9355132, "longitude": 6.9386099},
+        "Habsburgerring, 50674 Köln, Deutschland",
+    ),
+    (
+        {"latitude": 50.936625, "longitude": 6.94858},
+        "Neumarkt Galerie, Neumarkt 2-4, Köln, Nordrhein-Westfalen 50667, Deutschland",
+    ),
+]
+
+import random
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         if not User.query.get("a@b.de"):
-            print("creating user")
+            print("creating database")
             email = "a@b.de"
             password = "123"
             user = User(
                 email=email,
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
             )
-            ride = create_mock_ride()
-            reservation = create_mock_reservation()
             db.session.add(user)
-            db.session.add(ride)
-            db.session.add(reservation)
+            start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
+            for x in range(20):
+                coordinates, place_name = random.choice(resolved_places)
+                ride = create_mock_ride(
+                    place_name,
+                    start_date_time,
+                    coordinates["latitude"],
+                    coordinates["longitude"],
+                )
+                db.session.add(ride)
+                start_date_time += timedelta(minutes=15)
             db.session.commit()
-    # with app.app_context():
-    #     reservation2 = create_mock_reservation2()
-    #     db.session.add(reservation2)
-    #     db.session.commit()
     app.run(debug=True)
