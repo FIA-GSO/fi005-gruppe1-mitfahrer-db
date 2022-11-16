@@ -235,6 +235,15 @@ def get_posted_rides():
     return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
 
 
+@app.route("/rides/detail", methods=["GET"])
+@flask_login.login_required
+def get_ride_detail():
+    ride_id = request.args.get("id")
+
+    ride = Ride.query.get(int(ride_id))
+    return {"status": "success", "ride": ride.to_dict()}
+
+
 @app.route("/rides/reserved", methods=["GET"])
 @flask_login.login_required
 def get_reserved_rides():
