@@ -66,7 +66,7 @@ const createAppRouter = () => {
     const userStore = useUserStore()
 
     if (!userStore.user && to.name !== "Login" && ["createRide", "searchRide", "rideDetails", "userDetails"].includes(to.name?.toString() || "")) {
-      return {name: "Login"}
+      return {name: "login"}
     }
     return true
   })
