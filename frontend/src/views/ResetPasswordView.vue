@@ -54,27 +54,20 @@ export default {
 </script>
 
 <template>
-  <main class="h-full">
-    <header class="bg-white">
-      <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
-        <RouterLink to="/" class="pl-4 md:pl-12 mx-auto lg:mx-0 p-2">
-          <img alt="Vue logo" class="logo max-w-max h-20" src="@/assets/cropped-LOGO-GSO_neu.png" />
-        </RouterLink>
-      </div>
-    </header>
-    <div class="bg-white sm:pt-8 h-full">
-      <div
-        class="container bg-white xs:rounded-none sm:rounded sm:max-w-md mx-auto xs:w-screen md:w-auto center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center">
-        <FormKit type="form" @submit="submit" id="register-form" class="flex flex-col" submit-label="Passwort zurücksetzen">
-          <h1 class="font-sans dont-bold text-3xl text-center pb-8">
-            Passwort zurücksetzen
-          </h1>
-          <p class="pb-8">Bitte geben Sie Ihre GSO-E-Mail-Adresse ein.
-          <br><br>Anschließend wird eine E-Mail mit weiteren Anweisungen, um ein neues Passwort zu erstellen, gesendet. </p>
-          <FormKit type="text" name="email" validation="required|email" label="GSO-E-Mail-Adresse"
-            class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
-        </FormKit>
-      </div>
+  <div class="bg-white grow w-screen flex items-center justify-center">
+    <div
+      class="container bg-white xs:rounded-none sm:rounded sm:max-w-md xs:w-screen w-md center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center">
+      <FormKit type="form" @submit="submit" id="register-form" class="flex flex-col"
+        submit-label="Passwort zurücksetzen">
+        <h1 class="font-sans dont-bold text-3xl text-center pb-8">
+          Passwort zurücksetzen
+        </h1>
+        <p class="pb-8">Bitte geben Sie Ihre GSO-E-Mail-Adresse ein.
+          <br><br>Anschließend wird eine E-Mail mit weiteren Anweisungen, um ein neues Passwort zu erstellen, gesendet.
+        </p>
+        <FormKit type="text" name="email" validation="required|email" label="GSO-E-Mail-Adresse"
+          class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"></FormKit>
+      </FormKit>
     </div>
-  </main>
+  </div>
 </template>
