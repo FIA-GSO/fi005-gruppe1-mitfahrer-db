@@ -281,6 +281,7 @@ def search_rides():
     time_end = time.fromisoformat(request.args.get("timeRangeEnd"))
     start_range = datetime.combine(the_date, time_start)
     end_range = datetime.combine(the_date, time_end)
+    direction = request.args.get("direction")
 
     input_place_name = request.args.get("address")
     coordinates, place_name = AdressConverter.get_mapbox_coordinates(input_place_name)
@@ -290,6 +291,7 @@ def search_rides():
     rides = Ride.query.filter(
         (Ride.departure_date_time >= start_range)
         & (Ride.departure_date_time <= end_range)
+        & (Ride.direction == direction)
     ).all()
 
     ride_distances = {}
