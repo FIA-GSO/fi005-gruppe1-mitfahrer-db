@@ -2,6 +2,11 @@
 import RideListing from "@/components/RideListing.vue";
 import { onMounted, reactive } from "vue";
 
+interface HomeData {
+  postedRides: [any];
+  reservedRides: [any];
+}
+
 const data = reactive({
   postedRides: [],
   reservedRides: [],
@@ -48,7 +53,12 @@ onMounted(() => {
         Angebotene Fahrten
       </h1>
       <div class="bg-white w-[600px] rounded-md overflow-hidden">
-        <RideListing v-for="ride in data.postedRides" :ride="ride" />
+        <RouterLink
+          v-for="ride in data.postedRides"
+          :to="'/rides/detail/' + ride.id"
+        >
+          <RideListing :ride="ride" />
+        </RouterLink>
       </div>
       <RouterLink
         to="/rides/create"

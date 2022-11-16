@@ -7,6 +7,7 @@ import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import UserHelpView from '@/views/UserHelpView.vue'
 import CreateRideView from '@/views/CreateRideView.vue'
 import SearchRideView from '@/views/SearchRideView.vue'
+import RideDetailView from '@/views/RideDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,10 @@ const router = createRouter({
     {
       path: '/rides/search',
       component: SearchRideView
+    },
+    {
+      path: '/rides/detail/:id',
+      component: RideDetailView
     }
   ]
 })
