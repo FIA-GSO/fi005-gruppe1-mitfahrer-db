@@ -47,7 +47,7 @@ onMounted(() => {
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Angebotene Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
+      <div class="bg-white w-[600px] rounded-md overflow-hidden">
         <RideListing v-for="ride in data.postedRides" :ride="ride" />
       </div>
       <RouterLink
@@ -61,7 +61,7 @@ onMounted(() => {
       <h1 class="text-white mt-12 text-xl font-semibold mb-1 ml-1">
         Reservierte Fahrten
       </h1>
-      <div class="bg-white w-96 rounded-md h-40 overflow-hidden">
+      <div class="bg-white w-[600px] rounded-md overflow-hidden">
         <RideListing v-for="ride in data.reservedRides" :ride="ride" />
       </div>
       <RouterLink
