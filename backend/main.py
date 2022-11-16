@@ -10,6 +10,7 @@ from flask_cors import CORS
 from datetime import datetime, date, time, timedelta
 import AdressConverter
 from geopy.distance import geodesic as GD
+import secrets
 
 app = Flask(__name__)
 CORS(
@@ -27,14 +28,12 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
+class UnverifiedUser(db.Model):
+    email = db.Column(db.String, primary_key=True)
+    auth_token = db.Column(db.String)
+
+
 class User(db.Model):
-    """An admin user capable of viewing reports.
-
-    :param str email: email address of user
-    :param str password: encrypted password for the user
-
-    """
-
     __tablename__ = "user"
 
     email = db.Column(db.String, primary_key=True)
@@ -60,6 +59,15 @@ class User(db.Model):
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
+
+    def to_dict(self):
+        return {
+            "email": self.email,
+            "lastName": self.last_name,
+            "firstName": self.first_name,
+            "birthdate": self.birthdate,
+            "gender": self.gender,
+        }
 
 
 class Ride(db.Model):
@@ -183,21 +191,71 @@ def user_info():
     mail = user.email
     print(user.__dir__())
     print(mail)
-    return {"status": "success", "user": {"email": user.email}}
+    return {"status": "success", "user": user.to_dict()}
 
 
 @app.route("/register", methods=["POST"])
 def register():
-    email = request.form["email"]
-    password = request.form["password"]
+    email = request.json.get("email")
 
-    user = User(email=email, password=password)
+    # TODO: Send confirmation mail
+
+    user = UnverifiedUser.query.get(email)
+    if not user:
+        auth_token = secrets.token_urlsafe(32)
+        user = UnverifiedUser(email=email, auth_token=auth_token)
+        db.session.add(user)
+        db.session.commit()
+        print("Created unverified user", user, email, auth_token)
+    else:
+        print("Re-using existing user", user, email, user.auth_token)
+
+    return {"status": "success", "tempAuthToken": user.auth_token}
+
+
+def confirm_register_token(token):
+    return db.session.execute(
+        db.select(UnverifiedUser).filter_by(auth_token=token)
+    ).scalar_one()
+
+
+@app.route("/check-registration", methods=["GET"])
+def check_registration():
+    auth_token = request.args.get("token")
+    user = confirm_register_token(auth_token)
+    print(auth_token, user)
+    print(user)
+    if user:
+        print(user.email)
+        return {"status": "success", "email": user.email, "token": auth_token}
+    else:
+        return {"status", "fail"}, 403
+
+
+@app.route("/register-confirm", methods=["POST"])
+def register_confirm():
+    auth_token = request.json.get("token")
+
+    unverified_user = confirm_register_token(auth_token)
+
+    hashed_password = bcrypt.hashpw(
+        request.json.get("password").encode("utf-8"), bcrypt.gensalt()
+    )
+
+    user = User(
+        email=unverified_user.email,
+        password=hashed_password,
+        first_name=request.json.get("firstName"),
+        last_name=request.json.get("lastName"),
+        birthdate=date.fromisoformat(request.json.get("birthdate")),
+        gender=request.json.get("gender"),
+    )
     db.session.add(user)
     db.session.commit()
 
     flask_login.login_user(user, remember=True)
 
-    return {"status": "success"}
+    return {"status": "success", "user": user.to_dict()}
 
 
 @app.route("/rides/posted", methods=["GET"])
