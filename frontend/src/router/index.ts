@@ -9,6 +9,7 @@ import CreateRideView from '@/views/CreateRideView.vue'
 import SearchRideView from '@/views/SearchRideView.vue'
 import RideDetailView from '@/views/RideDetailView.vue'
 import UserDetailsView from '@/views/UserDetailsView.vue'
+import ErrorView from '@/views/ErrorView.vue'
 
 const createAppRouter = () => {
   const router = createRouter({
@@ -58,6 +59,11 @@ const createAppRouter = () => {
         path: '/user-details',
         name: "userDetails",
         component: UserDetailsView
+      },
+      {
+        path: '/error',
+        name: "error",
+        component: ErrorView
       }
     ]
   })
