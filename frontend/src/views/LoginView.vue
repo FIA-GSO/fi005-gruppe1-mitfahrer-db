@@ -21,9 +21,9 @@ function forgotPassword(data: any) {
 </script>
 
 <template>
-    <div class="bg-white grow w-screen flex items-center justify-center">
+    <div class="bg-white dark:text-white grow w-screen flex items-center justify-center">
       <div
-        class="container bg-white xs:rounded-none sm:rounded sm:max-w-md xs:w-screen w-md center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
+        class="container xs:rounded-none sm:rounded sm:max-w-md xs:w-screen w-md center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
       >
         <FormKit
           type="form"

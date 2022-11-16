@@ -5,7 +5,7 @@ import HeaderView from "./views/HeaderView.vue";
 
 <template>
   <HeaderView></HeaderView>
-  <RouterView class="grow flex flex-col" />
+  <RouterView class="grow flex flex-col dark:text-black" />
 </template>
 
 <style>

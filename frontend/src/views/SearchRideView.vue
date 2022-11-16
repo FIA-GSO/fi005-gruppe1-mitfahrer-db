@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import RideListing from "@/components/RideListing.vue";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
+
+const departureAddress = ref('')
+const arrivalAddress = ref('')
+const rideDirection = ref('to')
 
 const data = reactive({
   rides: [],
@@ -28,14 +32,25 @@ async function submit(formData: any) {
   data.rides = response.rides;
   console.log("search rides response", response);
 }
+
+function updateFromToFields() {
+  if (rideDirection.value == 'to') {
+    departureAddress.value = arrivalAddress.value || ""
+    arrivalAddress.value = "GSO"
+  } else {
+    arrivalAddress.value = departureAddress.value || ""
+    departureAddress.value = "GSO"
+  }
+  
+}
 </script>
 
 <template>
   <main class="bg-white p-8">
     <div>
       <FormKit type="form" submit-label="Fahrt suchen" @submit="submit">
-        <div class="flex flex-col md:flex-row w-auto md:gap-8">
-          <div class="grow">
+      <div class="flex flex-col md:flex-row w-auto md:gap-8">
+        <div class="grow">
             <FormKit type="date" name="date" label="Abfahrtsdatum" />
             <div class="flex flex-row w-full gap-4">
               <FormKit
@@ -51,8 +66,10 @@ async function submit(formData: any) {
                 outer-class="grow"
               />
             </div>
-            <FormKit type="text" name="placeName" label="Abfahrtort" />
-            <FormKit type="text" name="arrivalAddress" label="Zielort" />
+          <FormKit v-model="rideDirection" @input="updateFromToFields" type="radio" label="Fahrtrichtung"
+            :options="{ 'to': 'Hinfahrt', 'from': 'Rückfahrt' }" />
+          <FormKit v-model="departureAddress" type="text" name="departureAddress" label="Abfahrtort" :disabled="rideDirection == 'from'"/>
+          <FormKit v-model="arrivalAddress" type="text" name="arrivalAddress" label="Zielort" :disabled="rideDirection == 'to'"/>
           </div>
           <div class="grow">
             <FormKit
