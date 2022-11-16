@@ -58,10 +58,7 @@ async function setup() {
   const rideId = route.params.id as string;
   const ride = await getRide(rideId);
   await isMounted;
-  createMap([
-    ride.departureCoordinates.longitude,
-    ride.departureCoordinates.latitude,
-  ]);
+  createMap([ride.coordinates.longitude, ride.coordinates.latitude]);
 }
 
 setup();

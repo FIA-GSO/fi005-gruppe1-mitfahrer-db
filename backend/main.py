@@ -241,7 +241,6 @@ def get_reserved_rides():
 @app.route("/rides/create", methods=["POST"])
 @flask_login.login_required
 def create_ride():
-
     address = request.json.get("address")
     direction = request.json.get("direction")
 
@@ -283,7 +282,7 @@ def search_rides():
     start_range = datetime.combine(the_date, time_start)
     end_range = datetime.combine(the_date, time_end)
 
-    input_place_name = request.args.get("placeName")
+    input_place_name = request.args.get("address")
     coordinates, place_name = AdressConverter.get_mapbox_coordinates(input_place_name)
 
     print("in", coordinates, place_name)
@@ -296,7 +295,7 @@ def search_rides():
     ride_distances = {}
     for ride in rides:
         ride_distances[ride.id] = GD(
-            (ride.departutre_adress_latitude, ride.departutre_adress_longitude),
+            (ride.latitude, ride.longitude),
             (coordinates["latitude"], coordinates["longitude"]),
         )
         print(ride, ride_distances[ride.id])
