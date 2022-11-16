@@ -65,7 +65,7 @@ const createAppRouter = () => {
   router.beforeEach(async (to, from) => {
     const userStore = useUserStore()
 
-    if (!userStore.user && to.name !== "Login" && ["CreateRide", "SearchRide", "RideDetails", "UserDetails"].includes(to.name?.toString() || "")) {
+    if (!userStore.user && to.name !== "Login" && ["createRide", "searchRide", "rideDetails", "userDetails"].includes(to.name?.toString() || "")) {
       return {name: "Login"}
     }
     return true
