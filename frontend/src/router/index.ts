@@ -6,6 +6,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import UserHelpView from '@/views/UserHelpView.vue'
 import CreateRideView from '@/views/CreateRideView.vue'
+import UserDetailsView from '@/views/UserDetailsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,7 +39,11 @@ const router = createRouter({
     {
       path: '/rides/create',
       component: CreateRideView
-    }
+    },
+    {
+      path: '/user-details',
+      component: UserDetailsView
+    },
   ]
 })
 

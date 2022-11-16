@@ -9,6 +9,12 @@ module.exports = {
       colors: {
         'gso-blue': '#5B9BD5',
         'backdrop': 'rgba(0,0,0,0.3)'
+      },
+      width: {
+        '128': '34rem'
+      },
+      screens: {
+        'xxs': '480px',
       }
     },
     fontFamily: {
