@@ -25,7 +25,7 @@ function openUserHelp() {
 
 <template>
   <div class="flex bg-gso-blue dark:text-white text-2xl md:text-3xl lg:text-4xl p-4 md:p-3 text-white xxs:justify-center text-center relative h-16">
-    <RouterLink to="/">Mitfahrer-Datenbank</RouterLink>
+    <RouterLink :to="{name: 'home'}">Mitfahrer-Datenbank</RouterLink>
     <div class="absolute top-0 right-0 bottom-0 flex items-center justify-center">
       <a href="#" @click="openUserHelp" class="p-2 text-2xl hover:bg-white hover:text-gso-blue rounded-full w-12 h-12">
         <font-awesome-icon icon="fa-solid fa-circle-question" />
@@ -44,7 +44,7 @@ function openUserHelp() {
               <font-awesome-icon v-if="userStore.user" icon="fa-solid fa-circle-user" />
             </a>
           </div>
-          <RouterLink to="/user-details" @click="$refs.userPopup.hidePopup()" class="text-sm mb-4 pr-4 sm:pr-0">Personendaten bearbeiten</RouterLink>
+          <RouterLink :to="{name: 'userDetails'}" @click="$refs.userPopup.hidePopup()" class="text-sm mb-4 pr-4 sm:pr-0">Personendaten bearbeiten</RouterLink>
           <a href="#" @click="logout" class="text-sm mb-4 pr-4 sm:pr-0 text-red-500">Ausloggen</a>
         </div>
 

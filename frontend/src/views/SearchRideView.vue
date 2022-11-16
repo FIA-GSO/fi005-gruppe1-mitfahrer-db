@@ -126,7 +126,7 @@ function updateFromToFields() {
       </FormKit>
     </div>
     <div>
-      <RouterLink v-for="ride in data.rides" :to="'/rides/detail/' + ride.id">
+      <RouterLink v-for="ride in data.rides" :to="{name: 'rideDetails', params: {id: ride.id}}">
         <RideListing :ride="ride" />
       </RouterLink>
     </div>

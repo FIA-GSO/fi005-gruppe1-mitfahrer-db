@@ -55,13 +55,13 @@ onMounted(() => {
       <div class="bg-white w-[600px] rounded-md overflow-hidden">
         <RouterLink
           v-for="(ride, i) in data.postedRides"
-          :to="'/rides/detail/' + ride.id"
+          :to="{name: 'rideDetails', params: {id: ride.id}}"
         >
           <RideListing :ride="ride" />
         </RouterLink>
       </div>
       <RouterLink
-        to="/rides/create"
+        :to="{name: 'createRide'}"
         class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
       >
         Fahrt anbieten
@@ -75,7 +75,7 @@ onMounted(() => {
         <RideListing v-for="ride in data.reservedRides" :ride="ride" />
       </div>
       <RouterLink
-        to="/rides/search"
+        :to="{name: 'searchRides'}"
         class="block bg-white rounded p-2 py-1 w-full border border-black mt-1 text-center"
       >
         Neue Fahrt suchen
