@@ -57,7 +57,7 @@ onMounted(() => {
           v-for="(ride, i) in data.postedRides"
           :to="'/rides/detail/' + ride.id"
         >
-          <RideListing :ride="ride" :flip="i % 2 === 0" />
+          <RideListing :ride="ride" />
         </RouterLink>
       </div>
       <RouterLink

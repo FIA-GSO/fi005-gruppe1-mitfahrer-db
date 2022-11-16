@@ -75,11 +75,11 @@ setup();
           Abfahrtszeit:
           {{ new Date(data.ride.departureDateTime).toLocaleString("de-DE") }}
         </p>
-        <p>Abfahrtort: {{ data.ride.departureAddress }}</p>
-        <p>Endstation: {{ data.ride.arrivalAddress }}</p>
+        <p>Ort: {{ data.ride.address }}</p>
         <p>Kilometerpauschale: {{ data.ride.pricePerKilometer }}</p>
         <!-- <p>Geschlecht: N/A</p> -->
         <p>Anzahl freier Sitzplätze: {{ data.ride.remainingSeats }}</p>
+        <p>Richtung: {{ data.ride.direction }}</p>
       </div>
     </div>
     <div id="map" />

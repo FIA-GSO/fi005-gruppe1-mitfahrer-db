@@ -68,14 +68,12 @@ class Ride(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
 
-    departutre_adress = db.Column(db.String)
+    address = db.Column(db.String)
+    direction = db.Column(db.String)
 
-    departutre_adress_longitude = db.Column(db.Float)
-    departutre_adress_latitude = db.Column(db.Float)
-    arrival_adress_longitude = db.Column(db.Float)
-    arrival_adress_latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    latitude = db.Column(db.Float)
 
-    arrival_adress = db.Column(db.String)
     departure_date_time = db.Column(db.DateTime)
 
     ride_is_started = db.Column(db.Boolean)
@@ -95,27 +93,6 @@ class Ride(db.Model):
         backref=db.backref("rides", order_by=departure_date_time),
     )
 
-    def get_ride_id(self):
-        return self.ride_id
-
-    def get_departure_adress(self):
-        return self.departutre_adress
-
-    def get_arrival_adress(self):
-        return self.arrival_adress
-
-    def is_started(self):
-        return self.ride_is_started
-
-    def is_canceled(self):
-        return self.ride_is_canceled
-
-    def get_price_per_kilometer(self):
-        return self.price_per_kilometer
-
-    def get_type_of_car(self):
-        return self.type_of_car
-
     def get_free_passenger_seats(self):
         self.free_passenger_seats = (
             self.available_passenger_seats - self.reserved_passenger_seats
@@ -125,16 +102,12 @@ class Ride(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "departureAddress": self.departutre_adress,
-            "arrivalAddress": self.arrival_adress,
+            "address": self.address,
+            "direction": self.direction,
             "departureDateTime": self.departure_date_time.isoformat(),
-            "departureCoordinates": {
-                "latitude": self.departutre_adress_latitude,
-                "longitude": self.departutre_adress_longitude,
-            },
-            "arrivalCoordinates": {
-                "latitude": self.arrival_adress_latitude,
-                "longitude": self.arrival_adress_longitude,
+            "coordinates": {
+                "latitude": self.latitude,
+                "longitude": self.longitude,
             },
             "started": self.ride_is_started,
             "cancelled": self.ride_is_canceled,
@@ -269,29 +242,21 @@ def get_reserved_rides():
 @flask_login.login_required
 def create_ride():
 
-    departutre_adress = request.json.get("departureAddress")
-    arrival_adress = request.json.get("arrivalAddress")
+    address = request.json.get("address")
+    direction = request.json.get("direction")
 
-    (
-        departure_coordinates,
-        departure_place_name,
-    ) = AdressConverter.get_mapbox_coordinates(departutre_adress)
-    arrival_coordinates, arrival_place_name = AdressConverter.get_mapbox_coordinates(
-        arrival_adress
-    )
+    coordinates, place_name = AdressConverter.get_mapbox_coordinates(address)
 
     other = request.json.get("other")
     ride = Ride(
         user_email=flask_login.current_user.email,
-        departutre_adress=departure_place_name,
-        arrival_adress=arrival_place_name,
+        address=place_name,
+        direction=direction,
+        latitude=coordinates["latitude"],
+        longitude=coordinates["longitude"],
         departure_date_time=datetime.fromisoformat(
             request.json.get("departureDateTime")
         ),
-        departutre_adress_longitude=departure_coordinates["longitude"],
-        departutre_adress_latitude=departure_coordinates["latitude"],
-        arrival_adress_longitude=arrival_coordinates["longitude"],
-        arrival_adress_latitude=arrival_coordinates["latitude"],
         ride_is_started=False,
         ride_is_canceled=False,
         arrival_delay="",
@@ -349,10 +314,10 @@ def search_rides():
 def create_mock_ride(label, date_time, lat, long):
     return Ride(
         user_email="a@b.de",
-        departutre_adress=label,
-        departutre_adress_longitude=long,
-        departutre_adress_latitude=lat,
-        arrival_adress=label,
+        address=label,
+        direction=random.choice(["from", "to"]),
+        longitude=long,
+        latitude=lat,
         departure_date_time=date_time,
         ride_is_started=False,
         ride_is_canceled=False,

@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { computed } from "@vue/reactivity";
+
 const props = defineProps({
   ride: {
     type: Object as any,
   },
-  flip: {
-    type: Boolean,
-  },
+});
+const flip = computed(() => {
+  return props.ride?.direction === "to";
 });
 const addressLines = (address: string) => {
   return address.split(", ");
@@ -40,7 +42,7 @@ const addressLines = (address: string) => {
         :class="{ 'order-3': flip, 'order-2': !flip }"
       >
         <div
-          v-for="(line, i) in addressLines(props.ride.departureAddress)"
+          v-for="(line, i) in addressLines(props.ride.address)"
           :class="{ 'font-bold': i === 0 }"
         >
           {{ line }}
