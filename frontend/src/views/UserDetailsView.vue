@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { API } from "@/utils/utils";
 import { useRouter } from "vue-router";
 const userStore = useUserStore();
 const router = useRouter();
+
+async function submit(formData: any) {
+  const response = await API("edit-user-details", "POST", JSON.stringify(formData))
+  console.log("Edit response", response);
+  userStore.user = (await response.json()).user;
+}
 </script>
 
 <template>
@@ -10,7 +17,7 @@ const router = useRouter();
     <div
       class="container bg-white xs:rounded-none sm:rounded xs:w-screen sm:w-128 center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
     >
-      <FormKit type="form" :actions="false">
+      <FormKit type="form" @submit="submit" submit-label="Änderungen speichern">
         <h1 class="font-sans dont-bold text-3xl text-center pb-8">
           Personendaten bearbeiten
         </h1>
@@ -20,29 +27,34 @@ const router = useRouter();
               type="text"
               label="Name"
               input-class="w-44 min-w-full"
-              :value="userStore.user.firstName"
+              :value="userStore.user.lastName"
+              name="lastName"
             />
-            <FormKit type="text" label="Vorname" />
+            <FormKit
+              type="text"
+              label="Vorname"
+              :value="userStore.user.firstName"
+              name="firstName"
+            />
             <FormKit type="password" label="Neues Passwort" />
             <FormKit type="password" label="Passwort wiederholen" />
           </div>
           <div class="flex flex-col w-full sm:w-56">
-            <FormKit type="date" label="Geburtsdatum" />
+            <FormKit
+              type="date"
+              label="Geburtsdatum"
+              :value="userStore.user.birthdate"
+              name="birthdate"
+            />
             <FormKit
               type="select"
               label="Geschlecht"
               :options="['männlich', 'weiblich', 'divers']"
+              :value="userStore.user.gender"
+              name="gender"
             />
             <FormKit type="file" label="Profilbild" />
           </div>
-        </div>
-        <div class="flex justify-between">
-          <FormKit type="button" input-class="!mt-6" @click="router.go(-1)"
-            >Abbrechen</FormKit
-          >
-          <FormKit type="submit" input-class="!mt-6"
-            >Änderungen speichern</FormKit
-          >
         </div>
       </FormKit>
     </div>

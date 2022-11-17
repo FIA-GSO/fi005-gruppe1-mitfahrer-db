@@ -65,7 +65,7 @@ class User(db.Model):
             "email": self.email,
             "lastName": self.last_name,
             "firstName": self.first_name,
-            "birthdate": self.birthdate,
+            "birthdate": self.birthdate.isoformat(),
             "gender": self.gender,
         }
 
@@ -254,6 +254,20 @@ def register_confirm():
     db.session.commit()
 
     flask_login.login_user(user, remember=True)
+
+    return {"status": "success", "user": user.to_dict()}
+
+
+@app.route("/edit-user-details", methods=["POST"])
+@flask_login.login_required
+def edit_user_details():
+    user = flask_login.current_user
+    user.first_name = request.json.get("firstName")
+    user.last_name = request.json.get("lastName")
+    user.birth_date = date.fromisoformat(request.json.get("birthdate"))
+    user.gender = request.json.get("gender")
+    db.session.add(user)
+    db.session.commit()
 
     return {"status": "success", "user": user.to_dict()}
 
