@@ -35,6 +35,55 @@ async function getRide(id: string): Promise<any> {
   return response.ride;
 }
 
+async function reserveRide(id: string) {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/rides/reserve", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    }).then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+      return r.json();
+    });
+    console.log("Reserve Response", response);
+    data.ride.isReserved = true;
+  } catch (e) {}
+}
+
+async function cancelReservation(id: string) {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/rides/cancel-reservation",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      }
+    ).then((r) => {
+      if (!r.ok) {
+        throw new Error();
+      }
+      return r.json();
+    });
+    console.log("Cancel Reservation Response", response);
+    data.ride.isReserved = false;
+  } catch (e) {}
+}
+
 async function createMap(coordinates: any) {
   console.log("Map loaded", coordinates);
   mapboxgl.accessToken =
@@ -68,15 +117,63 @@ setup();
   <main class="bg-white p-8 grid grid-cols-2">
     <div>
       <div v-if="data.ride">
-        <p>
-          Abfahrtszeit:
-          {{ new Date(data.ride.departureDateTime).toLocaleString("de-DE") }}
+        <p class="mb-4">
+          <span class="font-semibold">Abfahrtszeit: </span>
+          <span class="font-bold">{{
+            new Date(data.ride.departureDateTime).toLocaleString("de-DE")
+          }}</span>
         </p>
-        <p>Ort: {{ data.ride.address }}</p>
-        <p>Kilometerpauschale: {{ data.ride.pricePerKilometer }}</p>
+        <p class="mb-4">
+          <span class="font-semibold">Ort: </span
+          ><span class="font-bold">{{ data.ride.address }}</span>
+        </p>
+        <p class="mb-4">
+          <span class="font-semibold">Kilometerpauschale: </span
+          ><span class="font-bold">{{ data.ride.pricePerKilometer }}</span>
+        </p>
         <!-- <p>Geschlecht: N/A</p> -->
-        <p>Anzahl freier Sitzplätze: {{ data.ride.remainingSeats }}</p>
-        <p>Richtung: {{ data.ride.direction }}</p>
+        <p class="mb-4">
+          <span class="font-semibold">Anzahl freier Sitzplätze: </span
+          ><span class="font-bold">{{ data.ride.remainingSeats }}</span>
+        </p>
+        <p class="mb-4">
+          <span class="font-semibold">Richtung: </span>
+          <span class="font-bold">{{
+            data.ride.direction === "to" ? "Hinfahrt" : "Rückfahrt"
+          }}</span>
+        </p>
+        <p class="mb-4">
+          <span class="font-semibold">Reserviert: </span
+          ><span class="font-bold">{{
+            data.ride.isReserved ? "Ja" : "Nein"
+          }}</span>
+        </p>
+        <FormKit
+          type="checkbox"
+          label="Sonstiges"
+          :options="{
+            pets: 'Haustiere',
+            smoker: 'Raucher Fahrzeug',
+            coronaHygiene: 'Corona Hygiene Regeln',
+          }"
+          option-class="!opacity-100"
+          :disabled="true"
+          :value="data.ride.other"
+        />
+        <button
+          v-if="!data.ride.isReserved"
+          @click="reserveRide(data.ride.id)"
+          class="bg-gso-blue px-4 py-2 text-white rounded-full"
+        >
+          Reservieren
+        </button>
+        <button
+          v-else
+          @click="cancelReservation(data.ride.id)"
+          class="bg-gso-blue px-4 py-2 text-white rounded-full"
+        >
+          Stornieren
+        </button>
       </div>
     </div>
     <div id="map" />

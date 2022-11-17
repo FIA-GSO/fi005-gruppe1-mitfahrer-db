@@ -33,6 +33,16 @@ class UnverifiedUser(db.Model):
     auth_token = db.Column(db.String)
 
 
+class PasswordResetRequest(db.Model):
+    user_email = db.Column(db.String, db.ForeignKey("user.email"), primary_key=True)
+    auth_token = db.Column(db.String)
+    user = db.relationship(
+        "User",
+        foreign_keys=user_email,
+        backref=db.backref("password_reset_requests"),
+    )
+
+
 class User(db.Model):
     __tablename__ = "user"
 
@@ -107,7 +117,14 @@ class Ride(db.Model):
         )
         return self.free_passenger_seats
 
-    def to_dict(self):
+    def to_dict(self, current_user):
+        other = []
+        if self.animal_free_car:
+            other.append("pets")
+        if self.corona_rules_in_car:
+            other.append("coronaHygiene")
+        if self.smoking_in_car:
+            other.append("smoker")
         return {
             "id": self.id,
             "address": self.address,
@@ -122,11 +139,11 @@ class Ride(db.Model):
             "arrivalDelay": self.arrival_delay,
             "pricePerKilometer": self.price_per_kilometer,
             "carType": self.type_of_car,
+            "other": other,
             "availableSeats": self.available_passenger_seats,
-            "animalFree": self.animal_free_car,
-            "coronaRules": self.corona_rules_in_car,
-            "smoking": self.smoking_in_car,
             "remainingSeats": self.available_passenger_seats - len(self.reservations),
+            "isReserved": current_user.email
+            in [r.user_email for r in self.reservations],
         }
 
 
@@ -192,6 +209,71 @@ def user_info():
     print(user.__dir__())
     print(mail)
     return {"status": "success", "user": user.to_dict()}
+
+
+@app.route("/reset-password", methods=["POST"])
+def reset_password():
+    email = request.json.get("email")
+
+    # TODO: Send confirmation mail
+
+    reset_request = PasswordResetRequest.query.get(email)
+    if not reset_request:
+        auth_token = secrets.token_urlsafe(32)
+        reset_request = PasswordResetRequest(user_email=email, auth_token=auth_token)
+        db.session.add(reset_request)
+        db.session.commit()
+        print("Created password reset request", reset_request, email, auth_token)
+    else:
+        print(
+            "Re-using existing password reset request",
+            reset_request,
+            email,
+            reset_request.auth_token,
+        )
+
+    return {"status": "success", "tempAuthToken": reset_request.auth_token}
+
+
+def confirm_password_reset_token(token):
+    return db.session.execute(
+        db.select(PasswordResetRequest).filter_by(auth_token=token)
+    ).scalar_one()
+
+
+@app.route("/check-password-reset", methods=["GET"])
+def check_password_reset():
+    auth_token = request.args.get("token")
+    reset_request = confirm_password_reset_token(auth_token)
+    print(auth_token, reset_request)
+    print(reset_request)
+    if reset_request:
+        print(reset_request.user_email)
+        return {
+            "status": "success",
+            "email": reset_request.user_email,
+            "token": auth_token,
+        }
+    else:
+        return {"status", "fail"}, 403
+
+
+@app.route("/reset-password-confirm", methods=["POST"])
+def reset_password_confirm():
+    auth_token = request.json.get("token")
+
+    reset_request = confirm_password_reset_token(auth_token)
+
+    user = reset_request.user
+    print("Reset request user", user)
+
+    user.password = bcrypt.hashpw(
+        request.json.get("newPassword").encode("utf-8"), bcrypt.gensalt()
+    )
+    db.session.add(user)
+    db.session.commit()
+
+    return {"status": "success"}
 
 
 @app.route("/register", methods=["POST"])
@@ -264,8 +346,13 @@ def edit_user_details():
     user = flask_login.current_user
     user.first_name = request.json.get("firstName")
     user.last_name = request.json.get("lastName")
-    user.birth_date = date.fromisoformat(request.json.get("birthdate"))
+    user.birthdate = date.fromisoformat(request.json.get("birthdate"))
     user.gender = request.json.get("gender")
+
+    new_password = request.json.get("newPassword")
+    if new_password:
+        user.password = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt())
+
     db.session.add(user)
     db.session.commit()
 
@@ -277,16 +364,17 @@ def edit_user_details():
 def get_posted_rides():
     user = flask_login.current_user
     rides = user.rides
-    return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
+    return {"status": "success", "rides": [ride.to_dict(user) for ride in rides]}
 
 
 @app.route("/rides/detail", methods=["GET"])
 @flask_login.login_required
 def get_ride_detail():
+    user = flask_login.current_user
     ride_id = request.args.get("id")
 
     ride = Ride.query.get(int(ride_id))
-    return {"status": "success", "ride": ride.to_dict()}
+    return {"status": "success", "ride": ride.to_dict(user)}
 
 
 @app.route("/rides/reserved", methods=["GET"])
@@ -307,12 +395,60 @@ def get_reserved_rides():
         print(reservation.ride)
 
     rides = [reservation.ride for reservation in reservations]
-    return {"status": "success", "rides": [ride.to_dict() for ride in rides]}
+    return {"status": "success", "rides": [ride.to_dict(user) for ride in rides]}
+
+
+@app.route("/rides/reserve", methods=["POST"])
+@flask_login.login_required
+def reserve_ride():
+    user = flask_login.current_user
+    ride_id = int(request.json.get("id"))
+
+    existing_reservation = (
+        db.session.query(Reservation)
+        .filter(
+            (Reservation.user_email == user.email) & (Reservation.ride_id == ride_id)
+        )
+        .first()
+    )
+
+    if existing_reservation:
+        return {"status": "fail", "message": "Reservierung existiert bereits"}
+
+    reservation = Reservation(user_email=user.email, ride_id=ride_id)
+    db.session.add(reservation)
+    db.session.commit()
+
+    return {"status": "success"}
+
+
+@app.route("/rides/cancel-reservation", methods=["POST"])
+@flask_login.login_required
+def cancel_reservation():
+    user = flask_login.current_user
+    ride_id = int(request.json.get("id"))
+
+    existing_reservation = (
+        db.session.query(Reservation)
+        .filter(
+            (Reservation.user_email == user.email) & (Reservation.ride_id == ride_id)
+        )
+        .first()
+    )
+
+    if not existing_reservation:
+        return {"status": "fail", "message": "Reservierung existiert nicht"}
+
+    db.session.delete(existing_reservation)
+    db.session.commit()
+
+    return {"status": "success"}
 
 
 @app.route("/rides/create", methods=["POST"])
 @flask_login.login_required
 def create_ride():
+    user = flask_login.current_user
     address = request.json.get("address")
     direction = request.json.get("direction")
 
@@ -320,7 +456,7 @@ def create_ride():
 
     other = request.json.get("other")
     ride = Ride(
-        user_email=flask_login.current_user.email,
+        user_email=user.email,
         address=place_name,
         direction=direction,
         latitude=coordinates["latitude"],
@@ -337,16 +473,17 @@ def create_ride():
         reserved_passenger_seats=0,
         animal_free_car="pets" in other,
         corona_rules_in_car="coronaHygiene" in other,
-        smoking_in_car="smoking" in other,
+        smoking_in_car="smoker" in other,
     )
     db.session.add(ride)
     db.session.commit()
-    return {"status": "success", "ride": ride.to_dict()}
+    return {"status": "success", "ride": ride.to_dict(user)}
 
 
 @app.route("/rides/search", methods=["GET"])
 @flask_login.login_required
 def search_rides():
+    user = flask_login.current_user
     print(request.args)
     the_date = date.fromisoformat(request.args.get("date"))
     time_start = time.fromisoformat(request.args.get("timeRangeStart"))
@@ -377,7 +514,7 @@ def search_rides():
     sorted_rides = sorted(rides, key=lambda ride: ride_distances[ride.id].meters)
 
     ride_dicts = [
-        ride.to_dict() | {"distance": ride_distances[ride.id].meters}
+        ride.to_dict(user) | {"distance": ride_distances[ride.id].meters}
         for ride in sorted_rides
     ]
 
@@ -449,6 +586,7 @@ if __name__ == "__main__":
             user = User(
                 email=email,
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
+                birthdate=date.fromisoformat("2000-01-01"),
             )
             db.session.add(user)
             start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")

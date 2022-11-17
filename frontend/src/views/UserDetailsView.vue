@@ -48,7 +48,11 @@ async function submit(formData: any) {
               :value="userStore.user.firstName"
               name="firstName"
             />
-            <FormKit type="password" label="Neues Passwort" />
+            <FormKit
+              type="password"
+              label="Neues Passwort"
+              name="newPassword"
+            />
             <FormKit type="password" label="Passwort wiederholen" />
           </div>
           <div class="flex flex-col w-full sm:w-56">

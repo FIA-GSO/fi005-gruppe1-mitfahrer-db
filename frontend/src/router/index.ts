@@ -5,6 +5,7 @@ import RootView from '../views/RootView.vue'
 import RegisterDetailsView from '../views/RegisterDetailsView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
+import ResetPasswordConfirmView from '@/views/ResetPasswordConfirmView.vue'
 import CreateRideView from '@/views/CreateRideView.vue'
 import SearchRideView from '@/views/SearchRideView.vue'
 import RideDetailView from '@/views/RideDetailView.vue'
@@ -34,6 +35,11 @@ const createAppRouter = () => {
         path: '/reset-password',
         name: "resetPassword",
         component: ResetPasswordView
+      },
+      {
+        path: '/reset-password-confirm',
+        name: "resetPasswordConfirm",
+        component: ResetPasswordConfirmView
       },
       {
         path: '/register-confirm',
