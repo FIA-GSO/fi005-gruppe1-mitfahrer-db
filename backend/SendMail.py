@@ -1,8 +1,6 @@
 import requests
 import json
 
-tom_mail = 'tompatrick.g@gso.schule.koeln'
-
 api_key = "52be6c0603447dfcb77010303e7c5875-2de3d545-6fe61ce2"
 template_info_getter={
     "bestaetigungsmail":{
