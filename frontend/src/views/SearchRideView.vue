@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RideListing from "@/components/RideListing.vue";
+import { API } from "@/utils/utils";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -21,23 +22,8 @@ async function submit(formData: any) {
   delete formData.departureAddress;
   delete formData.arrivalAddress;
 
-  const response = await fetch(
-    "http://127.0.0.1:5000/rides/search?" + new URLSearchParams(formData),
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }
-  ).then((r) => {
-    if (!r.ok) {
-      throw new Error();
-    }
-    return r.json();
-  });
-  data.rides = response.rides;
+  const response = await API(`rides/search?${new URLSearchParams(formData)}`)
+  data.rides = (await response.json()).rides;
   console.log("search rides response", response);
 }
 

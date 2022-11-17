@@ -1,25 +1,12 @@
 <script setup lang="ts">
+import { API } from "@/utils/utils";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 async function submit(data: any) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/reset-password", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error("a");
-      }
-      return r.json();
-    });
-
+    const response = await API("reset-password", "POST", JSON.stringify(data));
     const authToken = response.tempAuthToken;
     router.push({
       path: "/reset-password-confirm",

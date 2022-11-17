@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RideListing from "@/components/RideListing.vue";
+import { API } from "@/utils/utils";
 import { onMounted, reactive } from "vue";
 
 interface HomeData {
@@ -13,31 +14,15 @@ const data = reactive({
 });
 
 async function getPostedRides() {
-  const response = await fetch("http://127.0.0.1:5000/rides/posted", {
-    method: "GET",
-    credentials: "include",
-  }).then((r) => {
-    if (!r.ok) {
-      throw new Error("Fail");
-    }
-    return r.json();
-  });
+  const response = await API("rides/posted")
   console.log("posted rides response", response);
-  data.postedRides = response.rides;
+  data.postedRides = (await response.json()).rides;
 }
 
 async function getReservedRides() {
-  const response = await fetch("http://127.0.0.1:5000/rides/reserved", {
-    method: "GET",
-    credentials: "include",
-  }).then((r) => {
-    if (!r.ok) {
-      throw new Error("Fail");
-    }
-    return r.json();
-  });
+  const response = await API("rides/reserved")
   console.log("reserved rides response", response);
-  data.reservedRides = response.rides;
+  data.reservedRides = (await response.json()).rides;
 }
 
 onMounted(() => {

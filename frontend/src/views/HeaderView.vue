@@ -13,8 +13,10 @@ function logout() {
   userPopup.value.hidePopup()
   try {
     userStore.logout();
-    router.push({ path: "/" });
-  } catch (e) { }
+    router.push({ name: "home" });
+  } catch (e) { 
+    console.log(e)
+  }
 }
 
 </script>

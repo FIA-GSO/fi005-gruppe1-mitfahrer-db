@@ -1,26 +1,14 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { API } from "@/utils/utils";
 import { useRouter } from "vue-router";
 const userStore = useUserStore();
 const router = useRouter();
 
 async function submit(formData: any) {
-  const response = await fetch("http://127.0.0.1:5000/edit-user-details", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  }).then((r) => {
-    if (!r.ok) {
-      throw new Error(`${r.status}`);
-    }
-    return r.json();
-  });
+  const response = await API("edit-user-details", "POST", JSON.stringify(formData))
   console.log("Edit response", response);
-  userStore.user = response.user;
+  userStore.user = (await response.json()).user;
 }
 </script>
 
