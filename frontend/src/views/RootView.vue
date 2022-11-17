@@ -6,6 +6,6 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <WelcomeView v-if="!userStore.user" />
+  <WelcomeView v-if="!userStore.initialized || !userStore.user" />
   <HomeView v-else />
 </template>

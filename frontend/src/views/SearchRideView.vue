@@ -22,7 +22,7 @@ async function submit(formData: any) {
   delete formData.departureAddress;
   delete formData.arrivalAddress;
 
-  const response = await API(`http://127.0.0.1:5000/rides/search?${new URLSearchParams(formData)}`)
+  const response = await API(`rides/search?${new URLSearchParams(formData)}`)
   data.rides = (await response.json()).rides;
   console.log("search rides response", response);
 }

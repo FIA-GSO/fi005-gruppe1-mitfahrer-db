@@ -5,8 +5,12 @@ import {API, getErrorMessage } from '@/utils/utils';
 export const useUserStore = defineStore('user', () => {
   const user = ref<any>(null);
   async function getUser() {
-    const response = await API("user-info")
-    user.value = (await response.json()).user;
+    try {
+      const response = await API("user-info")
+      user.value = (await response.json()).user;
+    } catch (error: any) {
+      console.log(error)
+    }
   }
 
   async function login(email: string, password: string) {
@@ -16,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function logout() {
     await API("logout")
+    user.value = null
   }
 
   const initialized = ref(false);

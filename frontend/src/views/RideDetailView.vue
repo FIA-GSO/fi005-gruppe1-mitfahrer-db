@@ -15,10 +15,15 @@ const data: DetailData = reactive({
 });
 
 async function getRide(id: string): Promise<any> {
-  const response = await API(`http://127.0.0.1:5000/rides/detail?${id}`)
+  try {
+    console.log("ID", id)
+  const response = await API(`rides/detail?id=${id}`)
   console.log("ride detail response", response);
   data.ride = (await response.json()).ride;
-  return (await response.json()).ride;
+  return data.ride
+  } catch (error: any) {
+    console.log(error)
+  }
 }
 
 async function createMap(coordinates: any) {
