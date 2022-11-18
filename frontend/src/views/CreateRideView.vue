@@ -102,7 +102,7 @@ function updateFromToFields() {
           />
           <FormKit
             type="radio"
-            label="Zahlungsmethoden"
+            label="Zahlungsmethode"
             name="paymentMethod"
             :options="{
               cash: 'Barzahlung',

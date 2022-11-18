@@ -24,9 +24,14 @@ function logout() {
   <div
     class="flex bg-gso-blue dark:text-white text-2xl md:text-3xl lg:text-4xl p-4 md:p-3 text-white xxs:justify-center text-center relative h-16">
     <RouterLink :to="{ name: 'home' }">Mitfahrer-Datenbank</RouterLink>
-    <div class="absolute top-0 right-0 bottom-0 flex items-center justify-center">
-      <a target="_blank" href="http://127.0.0.1:5000/help.pdf"
-        class="p-2 text-2xl hover:bg-white hover:text-gso-blue rounded-full w-12 h-12">
+    <div
+      class="absolute top-0 right-0 bottom-0 flex items-center justify-center"
+    >
+      <a
+        target="_blank"
+        href="/Benutzerhilfe_Mitfahrer_Datenbank.pdf"
+        class="p-2 text-2xl hover:bg-white hover:text-gso-blue rounded-full w-12 h-12"
+      >
         <font-awesome-icon icon="fa-solid fa-circle-question" />
       </a>
       <a href="#" v-if="userStore.user" @click="$refs.userPopup.showPopup()"
