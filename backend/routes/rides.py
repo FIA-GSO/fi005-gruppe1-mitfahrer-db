@@ -4,7 +4,7 @@ from flask import request
 import flask_login
 from lib.SendMail import send_mail_from_template
 from geopy.distance import geodesic as GD
-import lib.AdressConverter
+import lib.AdressConverter as AdressConverter
 from datetime import datetime, date, time
 
 
