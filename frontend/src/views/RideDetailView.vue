@@ -88,7 +88,7 @@ async function createMap(coordinates: LngLatLike, direction: string) {
     container: "map",
     style: "mapbox://styles/mapbox/light-v9",
     center: direction == "to" ? coordinates : gsoLngLat,
-    zoom: 17,
+    zoom: 20,
   });
 
   map.on("load", () => {
@@ -114,7 +114,7 @@ async function createMap(coordinates: LngLatLike, direction: string) {
       )
       .addTo(map);
 
-    map.fitBounds([coordinates, gsoLngLat], { padding: 200 });
+    map.fitBounds([coordinates, gsoLngLat], { padding: 100 });
   });
 }
 
@@ -158,7 +158,7 @@ setup();
 
 <template>
   <main class="bg-white p-8">
-    <div class="flex md:flex-row flex-col-reverse gap-6 mb-6">
+    <div class="flex md:flex-row flex-col gap-6 mb-6">
       <div>
         <div v-if="data.ride">
           <p class="mb-2">
