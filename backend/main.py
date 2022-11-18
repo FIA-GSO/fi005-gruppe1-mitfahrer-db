@@ -717,7 +717,25 @@ if __name__ == "__main__":
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="student",
             )
+            user3 = User(
+                email="teacher1@c.de",
+                first_name="Test2",
+                last_name="Account2",
+                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+                birthdate=date.fromisoformat("2000-01-02"),
+                type="teacher",
+            )
+            user4 = User(
+                email="teacher2@c.de",
+                first_name="Test2",
+                last_name="Account2",
+                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+                birthdate=date.fromisoformat("2000-01-02"),
+                type="teacher",
+            )
             db.session.add(user2)
+            db.session.add(user3)
+            db.session.add(user4)
             start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
             for x in range(20):
                 coordinates, place_name = random.choice(resolved_places)
