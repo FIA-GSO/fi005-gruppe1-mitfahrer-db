@@ -2,6 +2,7 @@
 import { getNode, setErrors } from "@formkit/core";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import { getErrorMessage } from "@/utils/utils";
 const userStore = useUserStore();
 const router = useRouter();
 
@@ -12,7 +13,7 @@ async function submit(data: any) {
     await userStore.login(data.email, data.password)
     router.push({ path: "/" })
   } catch (error: any) {
-    setErrors("login-form", [error.message])
+    setErrors("login-form", [getErrorMessage(error.message)])
   }
 }
 function forgotPassword(data: any) {
@@ -20,7 +21,7 @@ function forgotPassword(data: any) {
 }
 </script>
 
-<template>
+<template> 
     <div class="bg-white dark:text-white grow w-screen flex items-center justify-center">
       <div
         class="container xs:rounded-none sm:rounded sm:max-w-md xs:w-screen w-md center sm:border-2 sm:border-gray-400 p-8 flex flex-col align-center"
