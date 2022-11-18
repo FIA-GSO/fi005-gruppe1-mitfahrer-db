@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { API } from "@/utils/utils";
+import { setErrors } from "@formkit/core";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -20,8 +21,10 @@ async function submit(data: any) {
       },
     });
     console.log(response);
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    if (e.message === '409') {
+      setErrors('register-form', ['Diese E-Mail-Adresse ist berets mit einem Konto verknüpft. Bitte logge dich stattdessen ein.'])
+    }
   }
 }
 </script>
