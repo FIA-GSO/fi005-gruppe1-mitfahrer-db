@@ -305,14 +305,14 @@ setup();
     <div class="flex flex-row gap-2" v-if="!data?.ride?.isStarted">
       <template v-if="!data?.ride?.isOwner">
         <button
-          v-if="!data?.ride?.isReserved && !data?.ride?.isExpired"
+          v-if="!data?.ride?.isReserved && !data?.ride?.isExpired && !data?.ride?.isStarted && data?.ride?.remainingSeats > 0"
           @click="reserveRide(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
         >
           Reservieren
         </button>
         <button
-          v-else-if="!data.ride.isExpired"
+          v-else-if="data?.ride?.isReserved && !data?.ride?.isExpired && !data?.ride?.isStarted"
           @click="cancelReservation(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
         >
