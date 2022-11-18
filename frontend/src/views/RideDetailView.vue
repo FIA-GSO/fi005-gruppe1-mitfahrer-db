@@ -254,6 +254,10 @@ setup();
             >
           </p>
           <p class="mb-2">
+            <span class="font-semibold">Autotyp: </span
+            ><span class="font-bold">{{ data.ride.carType }}</span>
+          </p>
+          <p class="mb-2">
             <span class="font-semibold">Anzahl freier Sitzplätze: </span
             ><span class="font-bold">{{ data.ride.remainingSeats }}</span>
           </p>
