@@ -45,7 +45,7 @@ async function submit(formData: any) {
               type="text"
               label="Account-Typ"
               input-class="w-44 min-w-full"
-              :value="userStore.user.type"
+              :value="userStore.user.type === 'student' ? 'Schüler' : 'Lehrer'"
               name="type"
               :disabled="true"
             />

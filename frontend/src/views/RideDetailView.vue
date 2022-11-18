@@ -19,13 +19,9 @@ const data: DetailData = reactive({
 
 async function cancelRide(id: string) {
   try {
-    const response = await API(
-      "rides/cancel",
-      "POST",
-      {
-        id
-      }
-    );
+    const response = await API("rides/cancel", "POST", {
+      id,
+    });
     console.log(response);
     router.push({
       path: "/",
@@ -49,7 +45,7 @@ async function getRide(id: string): Promise<any> {
 
 async function reserveRide(id: string) {
   try {
-    const response = await API('rides/reserve', "POST", {id})
+    const response = await API("rides/reserve", "POST", { id });
     console.log("Reserve Response", response);
     data.ride = response.data.ride;
   } catch (e) {}
@@ -57,11 +53,11 @@ async function reserveRide(id: string) {
 
 async function cancelReservation(id: string) {
   try {
-    const response = await API("cancel-reservation", "POST", {id})
+    const response = await API("cancel-reservation", "POST", { id });
     console.log("Cancel Reservation Response", response);
     data.ride = response.data.ride;
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }
 
@@ -76,7 +72,7 @@ async function createMap(coordinates: LngLatLike, direction: string) {
     container: "map",
     style: "mapbox://styles/mapbox/light-v9",
     center: direction == "to" ? coordinates : gsoLngLat,
-    zoom: 17,
+    zoom: 20,
   });
 
   map.on("load", () => {
@@ -102,7 +98,7 @@ async function createMap(coordinates: LngLatLike, direction: string) {
       )
       .addTo(map);
 
-    map.fitBounds([coordinates, gsoLngLat], { padding: 200 });
+    map.fitBounds([coordinates, gsoLngLat], { padding: 100 });
   });
 }
 
@@ -126,18 +122,14 @@ async function reportDelay() {
   }
   const delayMinutes = parseInt(response);
   try {
-    const response = await API(
-      "rides/report-delay",
-      "POST",
-      {
-        id: route.params.id,
-        delayMinutes,
-      }
-    )
+    const response = await API("rides/report-delay", "POST", {
+      id: route.params.id,
+      delayMinutes,
+    });
     console.log("Delay response", response);
     data.ride = response.data.ride;
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
   }
 }
 
@@ -150,7 +142,7 @@ setup();
 
 <template>
   <main class="bg-white p-8">
-    <div class="flex md:flex-row flex-col-reverse gap-6 mb-6">
+    <div class="flex md:flex-row flex-col gap-6 mb-6">
       <div>
         <div v-if="data.ride">
           <p class="mb-2">
@@ -173,7 +165,10 @@ setup();
               >{{ data.ride.pricePerKilometer }} € / km</span
             >
           </p>
-          <!-- <p>Geschlecht: N/A</p> -->
+          <p class="mb-2">
+            <span class="font-semibold">Geschlecht: </span
+            ><span class="font-bold">{{ data.ride.ownerGender }}</span>
+          </p>
           <p class="mb-2">
             <span class="font-semibold">Anzahl freier Sitzplätze: </span
             ><span class="font-bold">{{ data.ride.remainingSeats }}</span>
@@ -182,12 +177,6 @@ setup();
             <span class="font-semibold">Richtung: </span>
             <span class="font-bold">{{
               data.ride.direction === "to" ? "Hinfahrt" : "Rückfahrt"
-            }}</span>
-          </p>
-          <p class="mb-2">
-            <span class="font-semibold">Reserviert: </span
-            ><span class="font-bold">{{
-              data.ride.isReserved ? "Ja" : "Nein"
             }}</span>
           </p>
           <p class="mb-2">

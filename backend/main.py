@@ -155,6 +155,8 @@ class Ride(db.Model):
             "paymentMethod": self.payment_method,
             "isOwner": self.user.email == current_user.email,
             "contactEmail": self.user.email,
+            "isExpired": self.departure_date_time < datetime.now(),
+            "ownerGender": self.user.gender,
         }
 
 
@@ -708,8 +710,8 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-01"),
                 type="student",
+                gender="männlich",
             )
-            db.session.add(user1)
             user2 = User(
                 email="b@c.de",
                 first_name="Test2",
@@ -717,6 +719,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="student",
+                gender="weiblich",
             )
             user3 = User(
                 email="teacher1@c.de",
@@ -725,6 +728,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="teacher",
+                gender="männlich",
             )
             user4 = User(
                 email="teacher2@c.de",
@@ -733,12 +737,14 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="teacher",
+                gender="männlich",
             )
+            db.session.add(user1)
             db.session.add(user2)
             db.session.add(user3)
             db.session.add(user4)
-            start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
-            for x in range(20):
+            start_date_time = datetime.fromisoformat("2022-11-17T08:30:00+01:00")
+            for x in range(10):
                 coordinates, place_name = random.choice(resolved_places)
                 ride = create_mock_ride(
                     place_name,
@@ -747,6 +753,6 @@ if __name__ == "__main__":
                     coordinates["longitude"],
                 )
                 db.session.add(ride)
-                start_date_time += timedelta(minutes=15)
+                start_date_time += timedelta(hours=8)
             db.session.commit()
     app.run(debug=True)
