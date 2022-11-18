@@ -56,7 +56,7 @@ onMounted(() => {
       >
         Angebotene Fahrten
       </h1>
-      <RideResults :rides="data.postedRides" />
+      <RideResults :rides="data.postedRides"/>
       <div class="flex justify-center">
         <RouterLink
           :to="{ name: 'createRide' }"

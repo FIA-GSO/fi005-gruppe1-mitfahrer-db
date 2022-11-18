@@ -53,7 +53,7 @@ async function reserveRide(id: string) {
 
 async function cancelReservation(id: string) {
   try {
-    const response = await API("cancel-reservation", "POST", { id });
+    const response = await API("rides/cancel-reservation", "POST", { id });
     console.log("Cancel Reservation Response", response);
     data.ride = response.data.ride;
   } catch (e) {
@@ -146,18 +146,50 @@ setup();
       <div>
         <div v-if="data.ride">
           <p class="mb-2">
-            <span class="font-semibold">Abfahrtszeit: </span>
-            <span class="font-bold">{{
-              new Date(data.ride.departureDateTime).toLocaleString("de-DE")
-            }}</span>
+            <img
+            v-if="data.ride.userImage"
+            class="w-8 h-8 rounded-full mr-3 overflow-hidden inline"
+            :src="'http://127.0.0.1:5000/' + data.ride.userImage"
+          />
+            <span class="font-semibold">{{data.ride.contactEmail}} 
+              <font-awesome-icon v-if="data.ride.ownerGender === 'male'" icon="fa-solid fa-mars" class="text-blue-400"/>
+              <font-awesome-icon v-if="data.ride.ownerGender === 'female'" icon="fa-solid fa-venus" class="text-red-400"/>
+              <font-awesome-icon v-if="data.ride.ownerGender === 'other'" icon="fa-solid fa-genderless" class="text-violet-400"/>
+            </span>
+            
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Ort: </span><br />
+            <span class="font-semibold">Abfahrt: </span>
+            <span class="font-bold">{{
+              new Date(data.ride.departureDateTime).toISOString().split('T')[1].slice(0, 5)
+            }} Uhr </span>
+            <span v-if="data.ride.delayMinutes > 0" class="font-bold text-red-500">
+              + {{ data.ride.delayMinutes }} min
+            </span>
+          </p>
+          <p class="mb-2">
+            <span class="font-semibold">Von:</span><br />
             <span
-              v-for="(line, i) in addressLines"
+            v-if="data.ride.direction === 'to'" v-for="(line, i) in addressLines"
               :class="{ 'font-bold': i === 0 }"
               >{{ line }}<br
             /></span>
+            <span v-else v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
+              :class="{ 'font-bold': i === 0 }">
+              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school"/> {{ line }}<br>
+            </span>
+          </p>
+          <p class="mb-2">
+            <span class="font-semibold">Nach:</span><br />
+            <span
+              v-if="data.ride.direction === 'from'" v-for="(line, i) in addressLines"
+              :class="{ 'font-bold': i === 0 }"
+              >{{ line }}<br
+            /></span>
+            <span v-else v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
+              :class="{ 'font-bold': i === 0 }">
+              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school"/> {{ line }}<br>
+            </span>
           </p>
           <p class="mb-2">
             <span class="font-semibold">Kilometerpauschale: </span
@@ -166,32 +198,15 @@ setup();
             >
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Geschlecht: </span
-            ><span class="font-bold">{{ data.ride.ownerGender }}</span>
-          </p>
-          <p class="mb-2">
             <span class="font-semibold">Anzahl freier Sitzplätze: </span
             ><span class="font-bold">{{ data.ride.remainingSeats }}</span>
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Richtung: </span>
-            <span class="font-bold">{{
-              data.ride.direction === "to" ? "Hinfahrt" : "Rückfahrt"
-            }}</span>
-          </p>
-          <p class="mb-2">
-            <span class="font-semibold">Verspätung: </span
-            ><span class="font-bold">{{ data.ride.delayMinutes }} Minuten</span>
-          </p>
-          <p class="mb-2">
-            <span class="font-semibold">Kontakt: </span
-            ><span
-              ><a
+            <a
                 class="font-bold underline"
                 :href="'mailto:' + data.ride.contactEmail"
-                >{{ data.ride.contactEmail }}</a
-              ></span
-            >
+                >Kontakt (E-Mail)</a
+              >
           </p>
           <FormKit
             type="checkbox"
