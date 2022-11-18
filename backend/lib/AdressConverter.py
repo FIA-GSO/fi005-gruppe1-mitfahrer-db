@@ -1,10 +1,9 @@
 from mapbox import Geocoder
 import json
 from .custom_geocoding import custom_reverse
+import os
 
-geocoder = Geocoder(
-    access_token="pk.eyJ1IjoiZ3NvbWl0ZmFocmVyZGIiLCJhIjoiY2xhaThmaGw3MDA3cjN2cGdvcXoyaGJjNyJ9.njwSq8e35577L6DyujSyKQ"
-)
+geocoder = Geocoder(access_token=os.getenv("MAPBOX_API_KEY"))
 geocoder.reverse = lambda *args, **kwargs: custom_reverse(geocoder, *args, **kwargs)
 
 

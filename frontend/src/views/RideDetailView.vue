@@ -79,8 +79,7 @@ async function cancelReservation(id: string) {
 
 async function createMap(coordinates: LngLatLike, direction: string) {
   console.log("Map loaded", coordinates);
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiZ3NvbWl0ZmFocmVyZGIiLCJhIjoiY2xhaThmaGw3MDA3cjN2cGdvcXoyaGJjNyJ9.njwSq8e35577L6DyujSyKQ";
+  mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY
 
   const gsoLngLat: LngLatLike = [6.995640957065214, 50.927547849999996];
 

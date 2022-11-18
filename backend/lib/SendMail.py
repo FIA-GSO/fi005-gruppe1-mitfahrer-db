@@ -1,7 +1,8 @@
 import requests
 import json
+import os
 
-api_key = "52be6c0603447dfcb77010303e7c5875-2de3d545-6fe61ce2"
+api_key = os.getenv("MAILGUN_API_KEY")
 template_info_getter = {
     "bestaetigungsmail": {"subject": "Bitte bestätigen Sie Ihre E-Mail-Adresse"},
     "passwortvergessen": {"subject": "Passwort vergessen?"},
