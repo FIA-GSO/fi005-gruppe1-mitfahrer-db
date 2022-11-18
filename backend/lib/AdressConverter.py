@@ -1,6 +1,6 @@
 from mapbox import Geocoder
 import json
-from custom_geocoding import custom_reverse
+from .custom_geocoding import custom_reverse
 
 geocoder = Geocoder(
     access_token="pk.eyJ1IjoiZ3NvbWl0ZmFocmVyZGIiLCJhIjoiY2xhaThmaGw3MDA3cjN2cGdvcXoyaGJjNyJ9.njwSq8e35577L6DyujSyKQ"
@@ -16,7 +16,6 @@ def get_mapbox_placename(adress_to_search):
 
 def get_mapbox_coordinates(adress_to_search, languages=["de"]):
     response = geocoder.forward(adress_to_search, limit=1, languages=languages)
-    # print(json.dumps(response.geojson()))
     first = response.geojson()["features"][0]
     coordinates = {}
     coordinates["latitude"] = first["geometry"]["coordinates"][1]

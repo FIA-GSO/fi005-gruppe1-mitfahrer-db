@@ -7,18 +7,18 @@ const route = useRoute();
 
 async function confirmResetRequest() {
   try {
-    const response = API(`check-password-reset?token=${route.query.token}`)
+    const response = API(`check-password-reset?token=${route.query.token}`);
     console.log(response);
     return response;
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 }
 confirmResetRequest();
 
 async function submit(formData: any) {
   formData.token = route.query.token;
-  const response = await API('reset-password-confirm', "POST", formData)
+  const response = await API("reset-password-confirm", "POST", formData);
   console.log(response);
   router.push({
     path: "/",
@@ -50,8 +50,10 @@ async function submit(formData: any) {
         ></FormKit>
         <FormKit
           type="text"
-          validation="required"
+          validation="required|confirm:newPassword"
+          validation-visibility="blur"
           label="Neues Passwort wiederholen"
+          name="newPassword_confirm"
           class="bg-gray-200 rounded h-16 px-8 mb-8 text-l outline-1 outline-gray-600"
         ></FormKit>
       </FormKit>

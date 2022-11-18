@@ -66,7 +66,13 @@ async function submit(formData: any) {
               name="password"
               validation="required"
             />
-            <FormKit type="password" label="Passwort wiederholen" />
+            <FormKit
+              type="password"
+              name="password_confirm"
+              label="Passwort wiederholen"
+              validation="required|confirm:password"
+              validation-visibility="blur"
+            />
           </div>
           <div class="flex flex-col w-full sm:w-56">
             <FormKit
@@ -78,7 +84,11 @@ async function submit(formData: any) {
             <FormKit
               type="select"
               label="Geschlecht"
-              :options="{'male': 'Männlich', 'female': 'Weiblich', 'other': 'Divers'}"
+              :options="{
+                male: 'Männlich',
+                female: 'Weiblich',
+                other: 'Divers',
+              }"
               name="gender"
             />
             <FormKit type="file" label="Profilbild" name="image" />

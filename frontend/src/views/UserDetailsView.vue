@@ -20,11 +20,7 @@ async function submit(formData: any) {
     formData.image = data.slice(data.indexOf("base64,") + 7);
   }
 
-  const response = await API(
-    "edit-user-details",
-    "POST",
-    formData
-  );
+  const response = await API("edit-user-details", "POST", formData);
   console.log("Edit response", response);
   userStore.user = response.data.user;
 }
@@ -68,8 +64,15 @@ async function submit(formData: any) {
               type="password"
               label="Neues Passwort"
               name="newPassword"
+              validation="required"
             />
-            <FormKit type="password" label="Passwort wiederholen" />
+            <FormKit
+              type="password"
+              label="Passwort wiederholen"
+              name="newPassword_confirm"
+              validation="required|confirm:newPassword"
+              validation-visibility="blur"
+            />
           </div>
           <div class="flex flex-col w-full sm:w-56">
             <FormKit
@@ -82,7 +85,11 @@ async function submit(formData: any) {
             <FormKit
               type="select"
               label="Geschlecht"
-              :options="{'male': 'Männlich', 'female': 'Weiblich', 'other': 'Divers'}"
+              :options="{
+                male: 'Männlich',
+                female: 'Weiblich',
+                other: 'Divers',
+              }"
               :value="userStore.user.gender"
               name="gender"
             />

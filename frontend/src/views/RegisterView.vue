@@ -7,11 +7,7 @@ const router = useRouter();
 
 async function submit(data: any) {
   try {
-    const response = await API(
-      "register",
-      "POST",
-      { email: data.email }
-    );
+    const response = await API("register", "POST", { email: data.email });
 
     const authToken = await response.data.tempAuthToken;
     router.push({
@@ -22,8 +18,10 @@ async function submit(data: any) {
     });
     console.log(response);
   } catch (e: any) {
-    if (e.message === '409') {
-      setErrors('register-form', ['Diese E-Mail-Adresse ist berets mit einem Konto verknüpft. Bitte logge dich stattdessen ein.'])
+    if (e.message === "409") {
+      setErrors("register-form", [
+        "Diese E-Mail-Adresse ist berets mit einem Konto verknüpft. Bitte logge dich stattdessen ein.",
+      ]);
     }
   }
 }
@@ -53,7 +51,7 @@ async function submit(data: any) {
           type="text"
           class="pb-8"
           name="email"
-          validation="required|email|ends_with:@gso.schule.koeln"
+          validation="required|email"
           validation-visibility="blur"
           label="GSO-E-Mail-Adresse"
         ></FormKit>
