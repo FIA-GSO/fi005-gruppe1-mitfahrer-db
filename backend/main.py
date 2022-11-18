@@ -211,6 +211,8 @@ def login():
             db.session.commit()
             flask_login.login_user(user, remember=True)
             return {"status": "success", "user": {"email": user.email}}
+        else:
+            return {"status": "error", "message": "Das Passwort ist nicht korrekt"}, 403
     return {"status": "fail"}, 403
 
 
@@ -240,8 +242,6 @@ def user_info():
 @app.route("/reset-password", methods=["POST"])
 def reset_password():
     email = request.json.get("email")
-
-    # TODO: Send confirmation mail
 
     reset_request = PasswordResetRequest.query.get(email)
     if not reset_request:
@@ -768,56 +768,56 @@ if __name__ == "__main__":
         db.create_all()
         if not User.query.get("a@b.de"):
             print("creating database")
-            user1 = User(
-                email="a@b.de",
-                first_name="Test",
-                last_name="Account",
-                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
-                birthdate=date.fromisoformat("2000-01-01"),
-                type="student",
-                gender="männlich",
-            )
-            user2 = User(
-                email="b@c.de",
-                first_name="Test2",
-                last_name="Account2",
-                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
-                birthdate=date.fromisoformat("2000-01-02"),
-                type="student",
-                gender="weiblich",
-            )
-            user3 = User(
-                email="teacher1@c.de",
-                first_name="Test2",
-                last_name="Account2",
-                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
-                birthdate=date.fromisoformat("2000-01-02"),
-                type="teacher",
-                gender="männlich",
-            )
-            user4 = User(
-                email="teacher2@c.de",
-                first_name="Test2",
-                last_name="Account2",
-                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
-                birthdate=date.fromisoformat("2000-01-02"),
-                type="teacher",
-                gender="männlich",
-            )
-            db.session.add(user1)
-            db.session.add(user2)
-            db.session.add(user3)
-            db.session.add(user4)
-            start_date_time = datetime.fromisoformat("2022-11-17T08:30:00+01:00")
-            for x in range(10):
-                coordinates, place_name = random.choice(resolved_places)
-                ride = create_mock_ride(
-                    place_name,
-                    start_date_time,
-                    coordinates["latitude"],
-                    coordinates["longitude"],
-                )
-                db.session.add(ride)
-                start_date_time += timedelta(hours=8)
-            db.session.commit()
+            # user1 = User(
+            #     email="a@b.de",
+            #     first_name="Test",
+            #     last_name="Account",
+            #     password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+            #     birthdate=date.fromisoformat("2000-01-01"),
+            #     type="student",
+            #     gender="männlich",
+            # )
+            # user2 = User(
+            #     email="b@c.de",
+            #     first_name="Test2",
+            #     last_name="Account2",
+            #     password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+            #     birthdate=date.fromisoformat("2000-01-02"),
+            #     type="student",
+            #     gender="weiblich",
+            # )
+            # user3 = User(
+            #     email="teacher1@c.de",
+            #     first_name="Test2",
+            #     last_name="Account2",
+            #     password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+            #     birthdate=date.fromisoformat("2000-01-02"),
+            #     type="teacher",
+            #     gender="männlich",
+            # )
+            # user4 = User(
+            #     email="teacher2@c.de",
+            #     first_name="Test2",
+            #     last_name="Account2",
+            #     password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+            #     birthdate=date.fromisoformat("2000-01-02"),
+            #     type="teacher",
+            #     gender="männlich",
+            # )
+            # db.session.add(user1)
+            # db.session.add(user2)
+            # db.session.add(user3)
+            # db.session.add(user4)
+            # start_date_time = datetime.fromisoformat("2022-11-17T08:30:00+01:00")
+            # for x in range(10):
+            #     coordinates, place_name = random.choice(resolved_places)
+            #     ride = create_mock_ride(
+            #         place_name,
+            #         start_date_time,
+            #         coordinates["latitude"],
+            #         coordinates["longitude"],
+            #     )
+            #     db.session.add(ride)
+            #     start_date_time += timedelta(hours=8)
+            # db.session.commit()
     app.run(debug=True)

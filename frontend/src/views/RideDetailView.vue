@@ -197,13 +197,19 @@ setup();
           </p>
           <p class="mb-2">
             <span class="font-semibold">Abfahrt: </span>
-            <span class="font-bold">{{
-              new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
-              hour: "2-digit",
-              minute: "2-digit"
-            })
-            }} Uhr </span>
-            <span v-if="data.ride.delayMinutes > 0" class="font-bold text-red-500">
+            <span class="font-bold"
+              >{{
+                new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}
+              Uhr
+            </span>
+            <span
+              v-if="data.ride.delayMinutes > 0"
+              class="font-bold text-red-500"
+            >
               + {{ data.ride.delayMinutes }} min
             </span>
           </p>
@@ -287,6 +293,12 @@ setup();
             :value="data.ride.paymentMethods"
           />
         </div>
+        <p class="mb-2" v-if="data?.ride?.isOwner && data?.ride?.isStarted">
+          <span class="font-semibold">Abholorte: </span>
+          <ul v-for="reservation in data.ride.reservations">
+            <li>{{ reservation.location }}</li>
+          </ul>
+        </p>
       </div>
       <div id="map" class="grow h-96 md:h-auto" />
     </div>
