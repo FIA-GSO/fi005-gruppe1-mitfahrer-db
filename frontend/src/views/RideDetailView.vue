@@ -182,13 +182,13 @@ setup();
               <font-awesome-icon
                 v-if="data.ride.ownerGender === 'other'"
                 icon="fa-solid fa-genderless"
-                class="text-violet-400"
+                class="text-violet-400 pr-1"
               />
             </span>
 
             <span
               v-if="data.ride.isStarted"
-              class="font-semibold text-xs uppercasetext-orange-500"
+              class="font-semibold text-xs uppercase text-green-500"
               >Gestartet</span
             >
             <span v-else class="font-semibold text-xs uppercase text-gray-500"
