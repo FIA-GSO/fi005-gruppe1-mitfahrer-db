@@ -154,6 +154,7 @@ class Ride(db.Model):
             else "",
             "paymentMethod": self.payment_method,
             "isOwner": self.user.email == current_user.email,
+            "contactEmail": self.user.email,
         }
 
 

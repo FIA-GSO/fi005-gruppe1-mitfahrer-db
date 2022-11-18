@@ -30,10 +30,10 @@ async function submit(formData: any) {
   const response = await API(
     "register-confirm",
     "POST",
-    JSON.stringify(formData)
+    formData
   );
   console.log(response);
-  userStore.user = (await response.json()).user;
+  userStore.user = response.data.user;
   router.push({
     path: "/",
   });
