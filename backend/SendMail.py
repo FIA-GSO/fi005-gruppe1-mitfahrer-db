@@ -11,6 +11,15 @@ template_info_getter={
     },
     "verspaetung":{
         "subject":"Verspätung für deine Fahrt gemeldet"
+    },
+    "new_reservation":{
+        "subject":"Neue Reservierung für deine Fahrt"
+    },
+    "canceled_reservation":{
+        "subject":"Eine reservierte Mitfahrt bei deiner Fahrt wurde storniert"
+    },
+    "user_canceled_ride":{
+        "subject":"Eine von Dir reservierte Fahrt wurde storniert"
     }}
 
 
