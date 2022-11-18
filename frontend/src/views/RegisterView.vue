@@ -12,7 +12,7 @@ async function submit(data: any) {
       { email: data.email }
     );
 
-    const authToken = (await response.json()).tempAuthToken;
+    const authToken = await response.data.tempAuthToken;
     router.push({
       path: "/register-confirm",
       query: {
