@@ -30,7 +30,7 @@ function logout() {
     >
       <a
         target="_blank"
-        href="#"
+        href="/Benutzerhilfe_Mitfahrer_Datenbank.pdf"
         class="p-2 text-2xl hover:bg-white hover:text-gso-blue rounded-full w-12 h-12"
       >
         <font-awesome-icon icon="fa-solid fa-circle-question" />
