@@ -78,7 +78,7 @@ async function submit(formData: any) {
             <FormKit
               type="select"
               label="Geschlecht"
-              :options="['männlich', 'weiblich', 'divers']"
+              :options="{'male': 'Männlich', 'female': 'Weiblich', 'other': 'Divers'}"
               name="gender"
             />
             <FormKit type="file" label="Profilbild" name="image" />
