@@ -73,7 +73,7 @@ function updateFromToFields() {
             name="pricePerKilometer"
             label="Kilometerpauschale (€/km)"
             step="0.01"
-            validation="required"
+            validation="required|between:0,0.3"
           />
           <FormKit
             type="datetime-local"
@@ -101,9 +101,9 @@ function updateFromToFields() {
             }"
           />
           <FormKit
-            type="radio"
-            label="Zahlungsmethode"
-            name="paymentMethod"
+            type="checkbox"
+            label="Zahlungsmethoden"
+            name="paymentMethods"
             :options="{
               cash: 'Barzahlung',
               paypal: 'PayPal',

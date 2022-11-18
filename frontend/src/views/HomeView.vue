@@ -44,7 +44,7 @@ onMounted(() => {
       <div class="flex justify-center">
         <RouterLink
           :to="{ name: 'searchRides' }"
-          class="block bg-white rounded px-5 py-1 mt-2 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
+          class="block bg-white rounded px-5 py-1 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
         >
           Fahrt suchen
         </RouterLink>
@@ -60,7 +60,7 @@ onMounted(() => {
       <div class="flex justify-center">
         <RouterLink
           :to="{ name: 'createRide' }"
-          class="block bg-white rounded px-5 py-1 mt-2 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
+          class="block bg-white rounded px-5 py-1 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
         >
           Neue Fahrt anbieten
         </RouterLink>
