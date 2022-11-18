@@ -69,7 +69,7 @@ async function reserveRide(id: string) {
 
 async function cancelReservation(id: string) {
   try {
-    const response = await API("cancel-reservation", "POST", { id });
+    const response = await API("rides/cancel-reservation", "POST", { id });
     console.log("Cancel Reservation Response", response);
     data.ride = response.data.ride;
   } catch (e) {

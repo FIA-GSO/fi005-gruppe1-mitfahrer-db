@@ -257,12 +257,12 @@ def reset_password():
             reset_request.auth_token,
         )
 
-    # response = send_mail_from_template(
-    #     "passwortvergessen",
-    #     email,
-    #     link="http://127.0.0.1:5173/reset-password-confirm?token=" + user.auth_token,
-    # )
-    # print("MG", email, response, response.text)
+    response = send_mail_from_template(
+        "passwortvergessen",
+        email,
+        link="http://127.0.0.1:5173/reset-password-confirm?token="
+        + reset_request.auth_token,
+    )
 
     return {"status": "success", "tempAuthToken": reset_request.auth_token}
 
@@ -327,12 +327,11 @@ def register():
     else:
         print("Re-using existing user", user, email, user.auth_token)
 
-    # response = send_mail_from_template(
-    #     "bestaetigungsmail",
-    #     email,
-    #     link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
-    # )
-    # print("MG", email, response, response.text)
+    response = send_mail_from_template(
+        "bestaetigungsmail",
+        email,
+        link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
+    )
 
     return {"status": "success", "tempAuthToken": user.auth_token}
 
@@ -483,7 +482,16 @@ def reserve_ride():
     if existing_reservation:
         return {"status": "fail", "message": "Reservierung existiert bereits"}
 
+    ride = Ride.query.get(ride_id)
     reservation = Reservation(user_email=user.email, ride_id=ride_id, location=location)
+
+    send_mail_from_template(
+        "new_reservation",
+        ride.user.email,
+        date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
+        link_to_details="http://127.0.0.1:5173/rides/detail/" + str(ride_id),
+    )
+
     db.session.add(reservation)
     db.session.commit()
 
@@ -515,6 +523,11 @@ def cancel_ride():
         return {"status": "fail", "message": "Fahrt existiert nicht"}
 
     for reservation in ride.reservations:
+        send_mail_from_template(
+            "user_canceled_ride",
+            reservation.user_email,
+            date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
+        )
         db.session.delete(reservation)
 
     db.session.delete(ride)
@@ -541,6 +554,14 @@ def cancel_reservation():
         return {"status": "fail", "message": "Reservierung existiert nicht"}
 
     ride = existing_reservation.ride
+
+    send_mail_from_template(
+        "canceled_reservation",
+        ride.user.email,
+        date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
+        link_to_details="http://127.0.0.1:5173/rides/detail/" + str(ride.id),
+    )
+
     db.session.delete(existing_reservation)
     db.session.commit()
 
@@ -563,7 +584,6 @@ def report_delay():
             date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
             delay=ride.delay_minutes,
         )
-        print("MG", email, response, response.text)
 
     db.session.add(ride)
     db.session.commit()

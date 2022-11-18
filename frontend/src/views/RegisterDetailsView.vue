@@ -27,11 +27,7 @@ async function submit(formData: any) {
     formData.image = data.slice(data.indexOf("base64,") + 7);
   }
 
-  const response = await API(
-    "register-confirm",
-    "POST",
-    formData
-  );
+  const response = await API("register-confirm", "POST", formData);
   console.log(response);
   userStore.user = response.data.user;
   router.push({
@@ -56,13 +52,29 @@ async function submit(formData: any) {
               label="Name"
               input-class="w-44 min-w-full"
               name="lastName"
+              validation="required"
             />
-            <FormKit type="text" label="Vorname" name="firstName" />
-            <FormKit type="password" label="Passwort" name="password" />
+            <FormKit
+              type="text"
+              label="Vorname"
+              name="firstName"
+              validation="required"
+            />
+            <FormKit
+              type="password"
+              label="Passwort"
+              name="password"
+              validation="required"
+            />
             <FormKit type="password" label="Passwort wiederholen" />
           </div>
           <div class="flex flex-col w-full sm:w-56">
-            <FormKit type="date" label="Geburtsdatum" name="birthdate" />
+            <FormKit
+              type="date"
+              label="Geburtsdatum"
+              name="birthdate"
+              validation="required"
+            />
             <FormKit
               type="select"
               label="Geschlecht"
@@ -70,6 +82,20 @@ async function submit(formData: any) {
               name="gender"
             />
             <FormKit type="file" label="Profilbild" name="image" />
+            <FormKit
+              type="checkbox"
+              label="Datenschutzerklärung akzeptieren"
+              validation="required"
+            >
+              <template #label="context">
+                <label class="text-sm"
+                  ><a class="underline text-sm" href="/Datenschutzerklärung.pdf"
+                    >Datenschutzerklärung</a
+                  >
+                  akzeptiert</label
+                >
+              </template>
+            </FormKit>
           </div>
         </div>
       </FormKit>
