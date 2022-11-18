@@ -11,6 +11,15 @@ template_info_getter={
     },
     "verspaetung":{
         "subject":"Verspätung für deine Fahrt gemeldet"
+    },
+    "new_reservation":{
+        "subject":"Neue Reservierung für deine Fahrt"
+    },
+    "canceled_reservation":{
+        "subject":"Eine reservierte Mitfahrt bei deiner Fahrt wurde storniert"
+    },
+    "user_canceled_ride":{
+        "subject":"Eine von Dir reservierte Fahrt wurde storniert"
     }}
 
 
@@ -18,7 +27,10 @@ def send_mail_from_template(template, to, **template_variables):
     """ available templates and their template variables: 
         bestaetigungsmail : link
         passwortvergessen : link
-        verspaetung : date_time, delay"""
+        verspaetung : date_time, delay
+        new_reservation : date_time, link_to_details
+        canceled_reservation : date_time, link_to_details
+        user_canceled_ride : date_time """
 
     current_template = template_info_getter[template]
     mailgun_request = requests.post(

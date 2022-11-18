@@ -17,6 +17,16 @@ const data: DetailData = reactive({
   ride: null,
 });
 
+async function startRide(id: string) {
+  const locations = data.ride.reservations.map((r) => r.location);
+  const lines = ["Abholorte der Reservierungen:", ...locations];
+  alert(lines.join("\n"));
+  const response = await API("rides/start", "POST", {
+    id,
+  });
+  data.ride = response.data.ride;
+}
+
 async function cancelRide(id: string) {
   try {
     const response = await API("rides/cancel", "POST", {
@@ -45,9 +55,15 @@ async function getRide(id: string): Promise<any> {
 
 async function reserveRide(id: string) {
   try {
-    const response = await API("rides/reserve", "POST", { id });
-    console.log("Reserve Response", response);
-    data.ride = response.data.ride;
+    const input = prompt("Bitte geben Sie einen Abholort ein");
+    if (input) {
+      const response = await API("rides/reserve", "POST", {
+        id,
+        location: input,
+      });
+      console.log("Reserve Response", response);
+      data.ride = response.data.ride;
+    }
   } catch (e) {}
 }
 
@@ -208,6 +224,12 @@ setup();
                 >Kontakt (E-Mail)</a
               >
           </p>
+          <p class="mb-2">
+            <span class="font-semibold">Gestartet: </span
+            ><span class="font-bold">{{
+              data.ride.isStarted ? "Ja" : "Nein"
+            }}</span>
+          </p>
           <FormKit
             type="checkbox"
             label="Sonstiges"
@@ -221,8 +243,8 @@ setup();
             :value="data.ride.other"
           />
           <FormKit
-            type="radio"
-            label="Zahlungsmethode"
+            type="checkbox"
+            label="Zahlungsmethoden"
             name="paymentMethod"
             :options="{
               cash: 'Barzahlung',
@@ -230,30 +252,36 @@ setup();
             }"
             option-class="!opacity-100"
             :disabled="true"
-            :value="data.ride.paymentMethod"
+            :value="data.ride.paymentMethods"
           />
         </div>
       </div>
       <div id="map" class="grow h-96 md:h-auto" />
     </div>
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2" v-if="!data?.ride?.isStarted">
       <template v-if="!data?.ride?.isOwner">
         <button
-          v-if="!data?.ride?.isReserved"
+          v-if="!data?.ride?.isReserved && !data?.ride?.isExpired"
           @click="reserveRide(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
         >
           Reservieren
         </button>
         <button
-          v-else
+          v-else-if="!data.ride.isExpired"
           @click="cancelReservation(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
         >
-          Stornieren
+          Reservierung Stornieren
         </button>
       </template>
       <template v-else>
+        <button
+          @click="startRide(data.ride.id)"
+          class="bg-gso-blue px-4 py-2 text-white rounded-full"
+        >
+          Fahrt Starten
+        </button>
         <button
           @click="cancelRide(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
