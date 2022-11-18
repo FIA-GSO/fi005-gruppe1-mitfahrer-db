@@ -290,6 +290,12 @@ setup();
             :value="data.ride.paymentMethods"
           />
         </div>
+        <p class="mb-2" v-if="data?.ride?.isOwner && data?.ride?.isStarted">
+          <span class="font-semibold">Abholorte: </span>
+          <ul v-for="reservation in data.ride.reservations">
+            <li>{{ reservation.location }}</li>
+          </ul>
+        </p>
       </div>
       <div id="map" class="grow h-96 md:h-auto" />
     </div>
