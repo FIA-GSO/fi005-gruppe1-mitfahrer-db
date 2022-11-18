@@ -168,7 +168,7 @@ setup();
               :src="'http://127.0.0.1:5000/' + data.ride.userImage"
             />
             <span class="font-semibold"
-              >{{ data.ride.contactEmail }}
+              >{{ data.ride.contactEmail.split("@")[0] }}
               <font-awesome-icon
                 v-if="data.ride.ownerGender === 'male'"
                 icon="fa-solid fa-mars"
@@ -182,90 +182,87 @@ setup();
               <font-awesome-icon
                 v-if="data.ride.ownerGender === 'other'"
                 icon="fa-solid fa-genderless"
-                class="text-violet-400 pr-1"
+                class="text-violet-400"
               />
             </span>
 
             <span
               v-if="data.ride.isStarted"
-              class="font-semibold text-xs uppercase text-green-500"
+              class="font-semibold text-xs uppercase text-green-500 float-right mt-[5px]"
               >Gestartet</span
             >
-            <span v-else class="font-semibold text-xs uppercase text-gray-500"
+            <span v-else class="font-semibold text-xs uppercase text-gray-500 float-right mt-[5px]"
               >Nicht gestartet</span
             >
           </p>
+          <p class="mb-2 flex gap-8">
+            <span><font-awesome-icon icon="fa-solid fa-car-side" /> {{data.ride.carType}}</span>
+            <span><font-awesome-icon icon="fa-solid fa-user-group" /> {{data.ride.remainingSeats}}</span>
+            <span><font-awesome-icon icon="fa-solid fa-gas-pump" /> {{data.ride.pricePerKilometer}}€/km</span>
+          </p>
           <p class="mb-2">
-            <span class="font-semibold">Abfahrt: </span>
-            <span class="font-bold"
-              >{{
-                new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              }}
-              Uhr
-            </span>
-            <span
-              v-if="data.ride.delayMinutes > 0"
-              class="font-bold text-red-500"
-            >
+            <span class="font-semibold"><font-awesome-icon icon="fa-solid fa-calendar-days" /> </span>
+            <span class="font-bold pl-2">{{
+              new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
+              year: "2-digit",
+              month: "2-digit",
+              day: "2-digit"
+            })
+            }}</span>
+          </p>
+          <p class="mb-2">
+            <span class="font-semibold"><font-awesome-icon icon="fa-solid fa-clock" /> </span>
+            <span class="font-bold pl-2">{{
+              new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+            }} Uhr </span>
+            <span v-if="data.ride.delayMinutes > 0" class="font-bold text-red-500">
               + {{ data.ride.delayMinutes }} min
             </span>
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Von:</span><br />
+            <span class=""><font-awesome-icon icon="fa-solid fa-location-pin" /> <span class="ml-2 mr-1 font-semibold">Von</span> </span>
             <span
               v-if="data.ride.direction === 'to'"
               v-for="(line, i) in addressLines"
-              :class="{ 'font-bold': i === 0 }"
+              :class="{ 'font-bold': i === 0, 'text-sm': i !== 0  }"
               >{{ line }}<br
             /></span>
             <span
               v-else
               v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
-              :class="{ 'font-bold': i === 0 }"
+              :class="{ 'font-bold': i === 0, 'text-sm': i !== 0 }"
             >
-              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school" />
               {{ line }}<br />
             </span>
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Nach:</span><br />
+            <span class=""><font-awesome-icon icon="fa-solid fa-bullseye" /> <span class="ml-2 mr-1 font-semibold">Nach</span> </span>
             <span
               v-if="data.ride.direction === 'from'"
               v-for="(line, i) in addressLines"
-              :class="{ 'font-bold': i === 0 }"
+              :class="{ 'font-bold': i === 0, 'text-sm': i !== 0  }"
               >{{ line }}<br
             /></span>
             <span
               v-else
               v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
-              :class="{ 'font-bold': i === 0 }"
+              :class="{ 'font-bold': i === 0 , 'text-sm': i !== 0 }"
             >
-              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school" />
               {{ line }}<br />
             </span>
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Kilometerpauschale: </span
-            ><span class="font-bold"
-              >{{ data.ride.pricePerKilometer }} € / km</span
-            >
+            
           </p>
           <p class="mb-2">
-            <span class="font-semibold">Autotyp: </span
-            ><span class="font-bold">{{ data.ride.carType }}</span>
-          </p>
-          <p class="mb-2">
-            <span class="font-semibold">Anzahl freier Sitzplätze: </span
-            ><span class="font-bold">{{ data.ride.remainingSeats }}</span>
-          </p>
-          <p class="mb-2">
+            <font-awesome-icon icon="fa-solid fa-envelope" /> 
             <a
-              class="font-bold underline"
+              class="font-bold underline ml-3"
               :href="'mailto:' + data.ride.contactEmail"
-              >Kontakt (E-Mail)</a
+              >Kontakt</a
             >
           </p>
           <FormKit

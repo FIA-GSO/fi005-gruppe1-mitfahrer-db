@@ -61,12 +61,14 @@ const addressLines = (address: string) => {
         
 
       </div>
-      <div class="flex items-center justify-center">
+      <div class="flex flex-row sm:flex-col gap-2 items-center justify-center">
           <img
             v-if="props.ride.userImage"
             class="w-8 h-8 rounded-full overflow-hidden"
             :src="'http://127.0.0.1:5000/' + props.ride.userImage"
           />
+          
+          <span class="font-semibold">eneshan.t31</span>
         </div>
     </div>
   </div>
