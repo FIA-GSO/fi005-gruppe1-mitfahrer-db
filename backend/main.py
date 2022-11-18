@@ -242,6 +242,13 @@ def reset_password():
             reset_request.auth_token,
         )
 
+    # response = send_mail_from_template(
+    #     "passwortvergessen",
+    #     email,
+    #     link="http://127.0.0.1:5173/reset-password-confirm?token=" + user.auth_token,
+    # )
+    # print("MG", email, response, response.text)
+
     return {"status": "success", "tempAuthToken": reset_request.auth_token}
 
 
@@ -305,12 +312,12 @@ def register():
     else:
         print("Re-using existing user", user, email, user.auth_token)
 
-    response = send_mail_from_template(
-        "bestaetigungsmail",
-        email,
-        link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
-    )
-    print("MG", email, response, response.text)
+    # response = send_mail_from_template(
+    #     "bestaetigungsmail",
+    #     email,
+    #     link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
+    # )
+    # print("MG", email, response, response.text)
 
     return {"status": "success", "tempAuthToken": user.auth_token}
 
@@ -518,6 +525,16 @@ def report_delay():
     ride = Ride.query.get(request.json.get("id"))
     ride.delay_minutes = request.json.get("delayMinutes")
 
+    for reservation in ride.reservations:
+        email = reservation.user_email
+        response = send_mail_from_template(
+            "verspaetung",
+            email,
+            date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
+            delay=ride.delay_minutes,
+        )
+        print("MG", email, response, response.text)
+
     db.session.add(ride)
     db.session.commit()
     return {"status": "success", "ride": ride.to_dict(user)}
@@ -683,17 +700,24 @@ if __name__ == "__main__":
         db.create_all()
         if not User.query.get("a@b.de"):
             print("creating database")
-            email = "a@b.de"
-            password = "123"
-            user = User(
-                email=email,
+            user1 = User(
+                email="a@b.de",
                 first_name="Test",
                 last_name="Account",
-                password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
+                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-01"),
                 type="student",
             )
-            db.session.add(user)
+            db.session.add(user1)
+            user2 = User(
+                email="b@c.de",
+                first_name="Test2",
+                last_name="Account2",
+                password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
+                birthdate=date.fromisoformat("2000-01-02"),
+                type="student",
+            )
+            db.session.add(user2)
             start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
             for x in range(20):
                 coordinates, place_name = random.choice(resolved_places)
