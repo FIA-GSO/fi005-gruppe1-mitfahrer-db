@@ -163,51 +163,88 @@ setup();
         <div v-if="data.ride">
           <p class="mb-2">
             <img
-            v-if="data.ride.userImage"
-            class="w-8 h-8 rounded-full mr-3 overflow-hidden inline"
-            :src="'http://127.0.0.1:5000/' + data.ride.userImage"
-          />
-            <span class="font-semibold">{{data.ride.contactEmail}} 
-              <font-awesome-icon v-if="data.ride.ownerGender === 'male'" icon="fa-solid fa-mars" class="text-blue-400"/>
-              <font-awesome-icon v-if="data.ride.ownerGender === 'female'" icon="fa-solid fa-venus" class="text-red-400"/>
-              <font-awesome-icon v-if="data.ride.ownerGender === 'other'" icon="fa-solid fa-genderless" class="text-violet-400"/>
+              v-if="data.ride.userImage"
+              class="w-8 h-8 rounded-full mr-3 overflow-hidden inline"
+              :src="'http://127.0.0.1:5000/' + data.ride.userImage"
+            />
+            <span class="font-semibold"
+              >{{ data.ride.contactEmail }}
+              <font-awesome-icon
+                v-if="data.ride.ownerGender === 'male'"
+                icon="fa-solid fa-mars"
+                class="text-blue-400"
+              />
+              <font-awesome-icon
+                v-if="data.ride.ownerGender === 'female'"
+                icon="fa-solid fa-venus"
+                class="text-red-400"
+              />
+              <font-awesome-icon
+                v-if="data.ride.ownerGender === 'other'"
+                icon="fa-solid fa-genderless"
+                class="text-violet-400"
+              />
             </span>
-            
-            <span v-if="data.ride.isStartet" class="font-semibold text-xs uppercasetext-orange-500">Gestartet</span>
-            <span v-else class="font-semibold text-xs uppercase text-gray-500">Nicht gestartet</span>
-            
+
+            <span
+              v-if="data.ride.isStarted"
+              class="font-semibold text-xs uppercasetext-orange-500"
+              >Gestartet</span
+            >
+            <span v-else class="font-semibold text-xs uppercase text-gray-500"
+              >Nicht gestartet</span
+            >
           </p>
           <p class="mb-2">
             <span class="font-semibold">Abfahrt: </span>
-            <span class="font-bold">{{
-              new Date(data.ride.departureDateTime).toISOString().split('T')[1].slice(0, 5)
-            }} Uhr </span>
-            <span v-if="data.ride.delayMinutes > 0" class="font-bold text-red-500">
+            <span class="font-bold"
+              >{{
+                new Date(data.ride.departureDateTime)
+                  .toISOString()
+                  .split("T")[1]
+                  .slice(0, 5)
+              }}
+              Uhr
+            </span>
+            <span
+              v-if="data.ride.delayMinutes > 0"
+              class="font-bold text-red-500"
+            >
               + {{ data.ride.delayMinutes }} min
             </span>
           </p>
           <p class="mb-2">
             <span class="font-semibold">Von:</span><br />
             <span
-            v-if="data.ride.direction === 'to'" v-for="(line, i) in addressLines"
+              v-if="data.ride.direction === 'to'"
+              v-for="(line, i) in addressLines"
               :class="{ 'font-bold': i === 0 }"
               >{{ line }}<br
             /></span>
-            <span v-else v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
-              :class="{ 'font-bold': i === 0 }">
-              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school"/> {{ line }}<br>
+            <span
+              v-else
+              v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
+              :class="{ 'font-bold': i === 0 }"
+            >
+              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school" />
+              {{ line }}<br />
             </span>
           </p>
           <p class="mb-2">
             <span class="font-semibold">Nach:</span><br />
             <span
-              v-if="data.ride.direction === 'from'" v-for="(line, i) in addressLines"
+              v-if="data.ride.direction === 'from'"
+              v-for="(line, i) in addressLines"
               :class="{ 'font-bold': i === 0 }"
               >{{ line }}<br
             /></span>
-            <span v-else v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
-              :class="{ 'font-bold': i === 0 }">
-              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school"/> {{ line }}<br>
+            <span
+              v-else
+              v-for="(line, i) in ['GSO', 'Westerwaldstraße 91', '51105 Köln']"
+              :class="{ 'font-bold': i === 0 }"
+            >
+              <font-awesome-icon v-if="i === 0" icon="fa-solid fa-school" />
+              {{ line }}<br />
             </span>
           </p>
           <p class="mb-2">
@@ -222,10 +259,10 @@ setup();
           </p>
           <p class="mb-2">
             <a
-                class="font-bold underline"
-                :href="'mailto:' + data.ride.contactEmail"
-                >Kontakt (E-Mail)</a
-              >
+              class="font-bold underline"
+              :href="'mailto:' + data.ride.contactEmail"
+              >Kontakt (E-Mail)</a
+            >
           </p>
           <FormKit
             type="checkbox"
