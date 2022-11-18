@@ -35,6 +35,18 @@ onMounted(() => {
 <template>
   <main class="flex sm:items-center">
     <div class="grow">
+      <h1 class="text-white mt-8 sm:mt-12 text-xl font-semibold mb-1 ml-1">
+        Reservierte Fahrten
+      </h1>
+      <RideResults :rides="data.reservedRides" />
+      <RouterLink
+        :to="{ name: 'searchRides' }"
+        class="block bg-white sm:rounded p-2 py-1 w-full border-y sm:border border-black mt-1 text-center"
+      >
+        Neue Fahrt suchen
+      </RouterLink>
+    </div>
+    <div class="mb-8">
       <h1
         class="text-white mt-4 text-center sm:text-left sm:mt-12 text-xl font-semibold mb-1 ml-1"
       >
@@ -46,18 +58,6 @@ onMounted(() => {
         class="block bg-white sm:rounded p-2 py-1 w-full border-y sm:border border-black mt-1 text-center"
       >
         Fahrt anbieten
-      </RouterLink>
-    </div>
-    <div class="mb-8">
-      <h1 class="text-white mt-8 sm:mt-12 text-xl font-semibold mb-1 ml-1">
-        Reservierte Fahrten
-      </h1>
-      <RideResults :rides="data.reservedRides" />
-      <RouterLink
-        :to="{ name: 'searchRides' }"
-        class="block bg-white sm:rounded p-2 py-1 w-full border-y sm:border border-black mt-1 text-center"
-      >
-        Neue Fahrt suchen
       </RouterLink>
     </div>
   </main>
