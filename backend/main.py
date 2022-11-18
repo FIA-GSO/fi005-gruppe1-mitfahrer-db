@@ -156,6 +156,7 @@ class Ride(db.Model):
             "isOwner": self.user.email == current_user.email,
             "contactEmail": self.user.email,
             "isExpired": self.departure_date_time < datetime.now(),
+            "ownerGender": self.user.gender,
         }
 
 
@@ -709,6 +710,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-01"),
                 type="student",
+                gender="männlich",
             )
             user2 = User(
                 email="b@c.de",
@@ -717,6 +719,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="student",
+                gender="weiblich",
             )
             user3 = User(
                 email="teacher1@c.de",
@@ -725,6 +728,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="teacher",
+                gender="männlich",
             )
             user4 = User(
                 email="teacher2@c.de",
@@ -733,6 +737,7 @@ if __name__ == "__main__":
                 password=bcrypt.hashpw("123".encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-02"),
                 type="teacher",
+                gender="männlich",
             )
             db.session.add(user1)
             db.session.add(user2)
