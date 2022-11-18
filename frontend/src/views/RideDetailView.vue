@@ -197,19 +197,13 @@ setup();
           </p>
           <p class="mb-2">
             <span class="font-semibold">Abfahrt: </span>
-            <span class="font-bold"
-              >{{
-                new Date(data.ride.departureDateTime)
-                  .toISOString()
-                  .split("T")[1]
-                  .slice(0, 5)
-              }}
-              Uhr
-            </span>
-            <span
-              v-if="data.ride.delayMinutes > 0"
-              class="font-bold text-red-500"
-            >
+            <span class="font-bold">{{
+              new Date(data.ride.departureDateTime).toLocaleString("de-DE", {
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+            }} Uhr </span>
+            <span v-if="data.ride.delayMinutes > 0" class="font-bold text-red-500">
               + {{ data.ride.delayMinutes }} min
             </span>
           </p>
