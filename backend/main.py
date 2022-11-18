@@ -7,7 +7,8 @@ from datetime import datetime, date, time, timedelta
 import AdressConverter
 from geopy.distance import geodesic as GD
 import secrets
-from base64 import b64decode, b64encode
+from base64 import b64decode
+from SendMail import send_mail_from_template
 
 app = Flask(__name__)
 CORS(
@@ -17,7 +18,7 @@ CORS(
 )
 app.config["DEBUG"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-app.secret_key = "super secret string"  # Change this!
+app.secret_key = "super secret string"
 db = SQLAlchemy(app)
 db.init_app(app)
 
@@ -257,7 +258,7 @@ def reset_password():
             reset_request.auth_token,
         )
 
-    response = send_mail_from_template(
+    send_mail_from_template(
         "passwortvergessen",
         email,
         link="http://127.0.0.1:5173/reset-password-confirm?token="
@@ -308,9 +309,6 @@ def reset_password_confirm():
     return {"status": "success"}
 
 
-from SendMail import send_mail_from_template
-
-
 @app.route("/register", methods=["POST"])
 def register():
     email = request.json.get("email")
@@ -325,9 +323,12 @@ def register():
         db.session.commit()
         print("Created unverified user", user, email, auth_token)
     else:
-        print("Re-using existing user", user, email, user.auth_token)
+        return {
+            "status": "error",
+            "message": "Benutzer mit dieser E-Mail Adresse existiert bereits",
+        }, 409
 
-    response = send_mail_from_template(
+    send_mail_from_template(
         "bestaetigungsmail",
         email,
         link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
@@ -578,7 +579,7 @@ def report_delay():
 
     for reservation in ride.reservations:
         email = reservation.user_email
-        response = send_mail_from_template(
+        send_mail_from_template(
             "verspaetung",
             email,
             date_time=ride.departure_date_time.strftime("%d.%m.%Y %H:%M"),
