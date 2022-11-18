@@ -17,6 +17,7 @@ const addressLines = (address: string) => {
 <template>
   <div
     class="text-xs px-3 p-2 flex flex-row justify-between items-center hover:bg-blue-50 hover:text-cyan-800 cursor-pointer border-b"
+    :class="{ 'opacity-30': ride.isExpired }"
   >
     <div
       class="route grid grid-cols-[40%_min-content_40%] sm:grid-cols-[30%_min-content_30%_1fr] gap-4 items-center w-full"

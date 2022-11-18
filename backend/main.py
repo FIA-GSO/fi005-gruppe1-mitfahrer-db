@@ -155,6 +155,7 @@ class Ride(db.Model):
             "paymentMethod": self.payment_method,
             "isOwner": self.user.email == current_user.email,
             "contactEmail": self.user.email,
+            "isExpired": self.departure_date_time < datetime.now(),
         }
 
 
@@ -719,8 +720,8 @@ if __name__ == "__main__":
                 type="student",
             )
             db.session.add(user2)
-            start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
-            for x in range(20):
+            start_date_time = datetime.fromisoformat("2022-11-17T08:30:00+01:00")
+            for x in range(10):
                 coordinates, place_name = random.choice(resolved_places)
                 ride = create_mock_ride(
                     place_name,
@@ -729,6 +730,6 @@ if __name__ == "__main__":
                     coordinates["longitude"],
                 )
                 db.session.add(ride)
-                start_date_time += timedelta(minutes=15)
+                start_date_time += timedelta(hours=8)
             db.session.commit()
     app.run(debug=True)
