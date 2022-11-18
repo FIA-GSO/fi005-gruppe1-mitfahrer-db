@@ -6,8 +6,12 @@ const router = useRouter();
 
 async function submit(data: any) {
   try {
-    const response = await API("register", "POST", JSON.stringify({email: data.email}))
-    
+    const response = await API(
+      "register",
+      "POST",
+      JSON.stringify({ email: data.email })
+    );
+
     const authToken = (await response.json()).tempAuthToken;
     router.push({
       path: "/register-confirm",
@@ -46,7 +50,8 @@ async function submit(data: any) {
           type="text"
           class="pb-8"
           name="email"
-          validation="required|email"
+          validation="required|email|ends_with:@gso.schule.koeln"
+          validation-visibility="blur"
           label="GSO-E-Mail-Adresse"
         ></FormKit>
       </FormKit>

@@ -3,8 +3,9 @@ import { API } from "@/utils/utils";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { onMounted, reactive } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
+const router = useRouter();
 
 interface DetailData {
   ride: any | null;
@@ -14,15 +15,33 @@ const data: DetailData = reactive({
   ride: null,
 });
 
+async function cancelRide(id: string) {
+  try {
+    const response = await API(
+      "rides/cancel",
+      "POST",
+      JSON.stringify({
+        id,
+      })
+    );
+    console.log(response);
+    router.push({
+      path: "/",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function getRide(id: string): Promise<any> {
   try {
-    console.log("ID", id)
-  const response = await API(`rides/detail?id=${id}`)
-  console.log("ride detail response", response);
-  data.ride = (await response.json()).ride;
-  return data.ride
+    console.log("ID", id);
+    const response = await API(`rides/detail?id=${id}`);
+    console.log("ride detail response", response);
+    data.ride = (await response.json()).ride;
+    return data.ride;
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
   }
 }
 
@@ -45,7 +64,7 @@ async function reserveRide(id: string) {
       return r.json();
     });
     console.log("Reserve Response", response);
-    data.ride.isReserved = true;
+    data.ride = response.ride;
   } catch (e) {}
 }
 
@@ -71,7 +90,7 @@ async function cancelReservation(id: string) {
       return r.json();
     });
     console.log("Cancel Reservation Response", response);
-    data.ride.isReserved = false;
+    data.ride = response.ride;
   } catch (e) {}
 }
 
@@ -101,11 +120,32 @@ async function setup() {
   createMap([ride.coordinates.longitude, ride.coordinates.latitude]);
 }
 
+async function reportDelay() {
+  const response = window.prompt("Abfahrtszeit aktualisieren");
+  console.log("Response", response);
+  if (response == null) {
+    return;
+  }
+  const delayMinutes = parseInt(response);
+  try {
+    const response = await API(
+      "rides/report-delay",
+      "POST",
+      JSON.stringify({
+        id: route.params.id,
+        delayMinutes,
+      })
+    ).then((r) => r.json());
+    console.log("Delay response", response);
+    data.ride = response.ride;
+  } catch (error: any) {}
+}
+
 setup();
 </script>
 
 <template>
-  <main class="bg-white p-8 grid grid-cols-2">
+  <main class="bg-white p-8 grid grid-cols-2 gap-6">
     <div>
       <div v-if="data.ride">
         <p class="mb-4">
@@ -120,7 +160,9 @@ setup();
         </p>
         <p class="mb-4">
           <span class="font-semibold">Kilometerpauschale: </span
-          ><span class="font-bold">{{ data.ride.pricePerKilometer }}</span>
+          ><span class="font-bold"
+            >{{ data.ride.pricePerKilometer }} € / km</span
+          >
         </p>
         <!-- <p>Geschlecht: N/A</p> -->
         <p class="mb-4">
@@ -139,6 +181,10 @@ setup();
             data.ride.isReserved ? "Ja" : "Nein"
           }}</span>
         </p>
+        <p class="mb-4">
+          <span class="font-semibold">Verspätung: </span
+          ><span class="font-bold">{{ data.ride.delayMinutes }} Minuten</span>
+        </p>
         <FormKit
           type="checkbox"
           label="Sonstiges"
@@ -151,20 +197,60 @@ setup();
           :disabled="true"
           :value="data.ride.other"
         />
-        <button
-          v-if="!data.ride.isReserved"
-          @click="reserveRide(data.ride.id)"
-          class="bg-gso-blue px-4 py-2 text-white rounded-full"
-        >
-          Reservieren
-        </button>
-        <button
-          v-else
-          @click="cancelReservation(data.ride.id)"
-          class="bg-gso-blue px-4 py-2 text-white rounded-full"
-        >
-          Stornieren
-        </button>
+        <FormKit
+          type="checkbox"
+          label="Sonstiges"
+          :options="{
+            cash: 'Haustiere',
+            smoker: 'Raucher Fahrzeug',
+            coronaHygiene: 'Corona Hygiene Regeln',
+          }"
+          option-class="!opacity-100"
+          :disabled="true"
+          :value="data.ride.other"
+        />
+        <FormKit
+          type="radio"
+          label="Zahlungsmethoden"
+          name="paymentMethod"
+          :options="{
+            cash: 'Barzahlung',
+            paypal: 'PayPal',
+          }"
+          option-class="!opacity-100"
+          :disabled="true"
+          :value="data.ride.paymentMethod"
+        />
+        <div class="flex flex-row gap-2" v-if="!data.ride.isOwner">
+          <button
+            v-if="!data.ride.isReserved"
+            @click="reserveRide(data.ride.id)"
+            class="bg-gso-blue px-4 py-2 text-white rounded-full"
+          >
+            Reservieren
+          </button>
+          <button
+            v-else
+            @click="cancelReservation(data.ride.id)"
+            class="bg-gso-blue px-4 py-2 text-white rounded-full"
+          >
+            Stornieren
+          </button>
+        </div>
+        <div class="flex flex-row gap-2" v-else>
+          <button
+            @click="cancelRide(data.ride.id)"
+            class="bg-gso-blue px-4 py-2 text-white rounded-full"
+          >
+            Fahrt Stornieren
+          </button>
+          <button
+            @click="reportDelay"
+            class="bg-gso-blue px-4 py-2 text-white rounded-full"
+          >
+            Verspätung melden
+          </button>
+        </div>
       </div>
     </div>
     <div id="map" />

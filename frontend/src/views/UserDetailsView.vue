@@ -5,8 +5,26 @@ import { useRouter } from "vue-router";
 const userStore = useUserStore();
 const router = useRouter();
 
+const toBase64 = (file: any) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 async function submit(formData: any) {
-  const response = await API("edit-user-details", "POST", JSON.stringify(formData))
+  console.log(formData);
+  if (formData.image.length > 0) {
+    let data = await toBase64(formData.image[0].file);
+    formData.image = data.slice(data.indexOf("base64,") + 7);
+  }
+
+  const response = await API(
+    "edit-user-details",
+    "POST",
+    JSON.stringify(formData)
+  );
   console.log("Edit response", response);
   userStore.user = (await response.json()).user;
 }
@@ -25,16 +43,26 @@ async function submit(formData: any) {
           <div class="flex flex-col w-full sm:w-56">
             <FormKit
               type="text"
+              label="Account-Typ"
+              input-class="w-44 min-w-full"
+              :value="userStore.user.type"
+              name="type"
+              :disabled="true"
+            />
+            <FormKit
+              type="text"
               label="Name"
               input-class="w-44 min-w-full"
               :value="userStore.user.lastName"
               name="lastName"
+              validation="required"
             />
             <FormKit
               type="text"
               label="Vorname"
               :value="userStore.user.firstName"
               name="firstName"
+              validation="required"
             />
             <FormKit
               type="password"
@@ -49,6 +77,7 @@ async function submit(formData: any) {
               label="Geburtsdatum"
               :value="userStore.user.birthdate"
               name="birthdate"
+              validation="required"
             />
             <FormKit
               type="select"
@@ -57,7 +86,7 @@ async function submit(formData: any) {
               :value="userStore.user.gender"
               name="gender"
             />
-            <FormKit type="file" label="Profilbild" />
+            <FormKit type="file" label="Profilbild" name="image" />
           </div>
         </div>
       </FormKit>

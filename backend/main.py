@@ -1,8 +1,4 @@
-from flask import (
-    Flask,
-    render_template,
-    request,
-)
+from flask import Flask, render_template, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 import flask_login
 import bcrypt
@@ -11,6 +7,7 @@ from datetime import datetime, date, time, timedelta
 import AdressConverter
 from geopy.distance import geodesic as GD
 import secrets
+from base64 import b64decode, b64encode
 
 app = Flask(__name__)
 CORS(
@@ -24,8 +21,14 @@ app.secret_key = "super secret string"  # Change this!
 db = SQLAlchemy(app)
 db.init_app(app)
 
+
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+
+
+@app.route("/images/<path:path>")
+def send_report(path):
+    return send_from_directory("images", path)
 
 
 class UnverifiedUser(db.Model):
@@ -53,6 +56,8 @@ class User(db.Model):
     birthdate = db.Column(db.Date)
     gender = db.Column(db.String)
     authenticated = db.Column(db.Boolean, default=False)
+    image = db.Column(db.String)
+    type = db.Column(db.String)
 
     def is_active(self):
         """True, as all users are active."""
@@ -77,6 +82,8 @@ class User(db.Model):
             "firstName": self.first_name,
             "birthdate": self.birthdate.isoformat(),
             "gender": self.gender,
+            "image": "images/" + self.image + ".png" if self.image else "",
+            "type": self.type,
         }
 
 
@@ -96,14 +103,15 @@ class Ride(db.Model):
 
     ride_is_started = db.Column(db.Boolean)
     ride_is_canceled = db.Column(db.Boolean)
-    arrival_delay = db.Column(db.String, default="", nullable=True)  # Verspätungsspanne
+    delay_minutes = db.Column(db.Integer, nullable=True)
     price_per_kilometer = db.Column(db.Float)
     type_of_car = db.Column(db.String)
     available_passenger_seats = db.Column(db.Integer)
     reserved_passenger_seats = db.Column(db.Integer)
-    animal_free_car = db.Column(db.Boolean)
-    corona_rules_in_car = db.Column(db.Boolean)
-    smoking_in_car = db.Column(db.Boolean)
+    pets = db.Column(db.Boolean)
+    corona_hygiene = db.Column(db.Boolean, default=False)
+    smoker = db.Column(db.Boolean, default=False)
+    payment_method = db.Column(db.String, default=False)
 
     user = db.relationship(
         "User",
@@ -111,19 +119,16 @@ class Ride(db.Model):
         backref=db.backref("rides", order_by=departure_date_time),
     )
 
-    def get_free_passenger_seats(self):
-        self.free_passenger_seats = (
-            self.available_passenger_seats - self.reserved_passenger_seats
-        )
-        return self.free_passenger_seats
+    def get_remaining_seats(self):
+        return self.available_passenger_seats - len(self.reservations)
 
     def to_dict(self, current_user):
         other = []
-        if self.animal_free_car:
+        if self.pets:
             other.append("pets")
-        if self.corona_rules_in_car:
+        if self.corona_hygiene:
             other.append("coronaHygiene")
-        if self.smoking_in_car:
+        if self.smoker:
             other.append("smoker")
         return {
             "id": self.id,
@@ -136,14 +141,19 @@ class Ride(db.Model):
             },
             "started": self.ride_is_started,
             "cancelled": self.ride_is_canceled,
-            "arrivalDelay": self.arrival_delay,
             "pricePerKilometer": self.price_per_kilometer,
             "carType": self.type_of_car,
             "other": other,
             "availableSeats": self.available_passenger_seats,
-            "remainingSeats": self.available_passenger_seats - len(self.reservations),
+            "remainingSeats": self.get_remaining_seats(),
             "isReserved": current_user.email
             in [r.user_email for r in self.reservations],
+            "delayMinutes": self.delay_minutes,
+            "userImage": "images/" + self.user.image + ".png"
+            if self.user.image
+            else "",
+            "paymentMethod": self.payment_method,
+            "isOwner": self.user.email == current_user.email,
         }
 
 
@@ -314,6 +324,11 @@ def check_registration():
         return {"status", "fail"}, 403
 
 
+import re
+
+teacher_email_regex = re.compile(r"^\w\.\w+@gso.schule.koeln$")
+
+
 @app.route("/register-confirm", methods=["POST"])
 def register_confirm():
     auth_token = request.json.get("token")
@@ -324,6 +339,10 @@ def register_confirm():
         request.json.get("password").encode("utf-8"), bcrypt.gensalt()
     )
 
+    type = "student"
+    if teacher_email_regex.match(unverified_user.email):
+        type = "teacher"
+
     user = User(
         email=unverified_user.email,
         password=hashed_password,
@@ -331,7 +350,15 @@ def register_confirm():
         last_name=request.json.get("lastName"),
         birthdate=date.fromisoformat(request.json.get("birthdate")),
         gender=request.json.get("gender"),
+        type=type,
     )
+    image_b64 = request.json.get("image")
+    if image_b64:
+        image_data = b64decode(image_b64)
+        image_hash = secrets.token_hex()
+        with open("images/" + image_hash + ".png", mode="wb") as f:
+            f.write(image_data)
+        user.image = image_hash
     db.session.add(user)
     db.session.commit()
 
@@ -348,6 +375,14 @@ def edit_user_details():
     user.last_name = request.json.get("lastName")
     user.birthdate = date.fromisoformat(request.json.get("birthdate"))
     user.gender = request.json.get("gender")
+    image_b64 = request.json.get("image")
+
+    if image_b64:
+        image_data = b64decode(image_b64)
+        image_hash = secrets.token_hex()
+        with open("images/" + image_hash + ".png", mode="wb") as f:
+            f.write(image_data)
+        user.image = image_hash
 
     new_password = request.json.get("newPassword")
     if new_password:
@@ -419,6 +454,25 @@ def reserve_ride():
     db.session.add(reservation)
     db.session.commit()
 
+    return {"status": "success", "ride": reservation.ride.to_dict(user)}
+
+
+@app.route("/rides/cancel", methods=["POST"])
+@flask_login.login_required
+def cancel_ride():
+    ride_id = int(request.json.get("id"))
+
+    ride = Ride.query.get(ride_id)
+
+    if not ride:
+        return {"status": "fail", "message": "Fahrt existiert nicht"}
+
+    for reservation in ride.reservations:
+        db.session.delete(reservation)
+
+    db.session.delete(ride)
+    db.session.commit()
+
     return {"status": "success"}
 
 
@@ -439,10 +493,24 @@ def cancel_reservation():
     if not existing_reservation:
         return {"status": "fail", "message": "Reservierung existiert nicht"}
 
+    ride = existing_reservation.ride
     db.session.delete(existing_reservation)
     db.session.commit()
 
-    return {"status": "success"}
+    return {"status": "success", "ride": ride.to_dict(user)}
+
+
+@app.route("/rides/report-delay", methods=["POST"])
+@flask_login.login_required
+def report_delay():
+    user = flask_login.current_user
+
+    ride = Ride.query.get(request.json.get("id"))
+    ride.delay_minutes = request.json.get("delayMinutes")
+
+    db.session.add(ride)
+    db.session.commit()
+    return {"status": "success", "ride": ride.to_dict(user)}
 
 
 @app.route("/rides/create", methods=["POST"])
@@ -466,14 +534,13 @@ def create_ride():
         ),
         ride_is_started=False,
         ride_is_canceled=False,
-        arrival_delay="",
         price_per_kilometer=request.json.get("pricePerKilometer"),
         type_of_car=request.json.get("carType"),
         available_passenger_seats=request.json.get("availableSeatCount"),
-        reserved_passenger_seats=0,
-        animal_free_car="pets" in other,
-        corona_rules_in_car="coronaHygiene" in other,
-        smoking_in_car="smoker" in other,
+        pets="pets" in other,
+        corona_hygiene="coronaHygiene" in other,
+        smoker="smoker" in other,
+        payment_method=request.json.get("paymentMethod"),
     )
     db.session.add(ride)
     db.session.commit()
@@ -491,17 +558,42 @@ def search_rides():
     start_range = datetime.combine(the_date, time_start)
     end_range = datetime.combine(the_date, time_end)
     direction = request.args.get("direction")
+    payment_method = request.args.get("paymentMethod")
+    max_price_per_kilometer = request.args.get("pricePerKilometer")
 
     input_place_name = request.args.get("address")
     coordinates, place_name = AdressConverter.get_mapbox_coordinates(input_place_name)
 
+    other = request.args.get("other")
+
     print("in", coordinates, place_name)
 
-    rides = Ride.query.filter(
+    # rides = (
+    #     db.session.query(Ride)
+    #     .join(User)
+    #     .filter(Ride.user_email == user.email)
+    #     .order_by(Ride.departure_date_time)
+    #     .all()
+    # )
+
+    rides_query = Ride.query.filter(
         (Ride.departure_date_time >= start_range)
         & (Ride.departure_date_time <= end_range)
         & (Ride.direction == direction)
-    ).all()
+        & (Ride.payment_method == payment_method)
+        & (Ride.user.has(type=user.type))
+        & (Ride.price_per_kilometer <= max_price_per_kilometer)
+    )
+    if "coronaHygiene" in other:
+        rides_query = rides_query.filter(Ride.corona_hygiene == True)
+    if not "smoker" in other:
+        rides_query = rides_query.filter(Ride.smoker == False)
+    if not "pets" in other:
+        rides_query = rides_query.filter(Ride.pets == False)
+
+    rides = rides_query.all()
+
+    rides = [r for r in rides if r.get_remaining_seats() > 0]
 
     ride_distances = {}
     for ride in rides:
@@ -531,14 +623,14 @@ def create_mock_ride(label, date_time, lat, long):
         departure_date_time=date_time,
         ride_is_started=False,
         ride_is_canceled=False,
-        arrival_delay="Verspätungsspanne",
+        delay_minutes=random.randrange(0, 30),
         price_per_kilometer=1.23,
         type_of_car="Autotyp",
-        available_passenger_seats=3,
-        reserved_passenger_seats=1,
-        animal_free_car=False,
-        corona_rules_in_car=True,
-        smoking_in_car=True,
+        available_passenger_seats=1,
+        pets=False,
+        corona_hygiene=True,
+        smoker=True,
+        payment_method="cash",
     )
 
 
@@ -585,8 +677,11 @@ if __name__ == "__main__":
             password = "123"
             user = User(
                 email=email,
+                first_name="Test",
+                last_name="Account",
                 password=bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()),
                 birthdate=date.fromisoformat("2000-01-01"),
+                type="student",
             )
             db.session.add(user)
             start_date_time = datetime.fromisoformat("2022-11-20T08:30:00+01:00")
