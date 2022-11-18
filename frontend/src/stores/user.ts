@@ -7,15 +7,15 @@ export const useUserStore = defineStore('user', () => {
   async function getUser() {
     try {
       const response = await API("user-info")
-      user.value = (await response.json()).user;
+      user.value = response.data.user;
     } catch (error: any) {
       console.log(error)
     }
   }
 
   async function login(email: string, password: string) {
-    const response = await API("login", "POST", JSON.stringify({email, password}))
-    user.value = (await response.json()).user;
+    const response = await API("login", "POST", {email, password})
+    user.value = response.data.user;
   }
 
   async function logout() {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { API } from "@/utils/utils";
 import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
@@ -6,47 +7,18 @@ const route = useRoute();
 
 async function confirmResetRequest() {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:5000/check-password-reset?" +
-        new URLSearchParams({
-          token: route.query.token as string,
-        }),
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((r) => {
-      if (!r.ok) {
-        throw new Error(`${r.status}`);
-      }
-      return r.json();
-    });
+    const response = API(`check-password-reset?token=${route.query.token}`)
     console.log(response);
     return response;
-  } catch (e) {}
+  } catch (e) {
+    console.error(e)
+  }
 }
 confirmResetRequest();
 
 async function submit(formData: any) {
   formData.token = route.query.token;
-  const response = await fetch("http://127.0.0.1:5000/reset-password-confirm", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  }).then((r) => {
-    if (!r.ok) {
-      throw new Error(`${r.status}`);
-    }
-    return r.json();
-  });
+  const response = await API('reset-password-confirm', "POST", formData)
   console.log(response);
   router.push({
     path: "/",

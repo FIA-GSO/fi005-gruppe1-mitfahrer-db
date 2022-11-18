@@ -6,7 +6,7 @@ const router = useRouter();
 
 async function submit(data: any) {
   try {
-    const response = await API("reset-password", "POST", JSON.stringify(data));
+    const response = await API("reset-password", "POST", data);
     const authToken = response.tempAuthToken;
     router.push({
       path: "/reset-password-confirm",

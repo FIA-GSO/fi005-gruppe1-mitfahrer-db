@@ -17,13 +17,13 @@ const data = reactive({
 async function getPostedRides() {
   const response = await API("rides/posted");
   console.log("posted rides response", response);
-  data.postedRides = (await response.json()).rides;
+  data.postedRides = response.data.rides;
 }
 
 async function getReservedRides() {
   const response = await API("rides/reserved");
   console.log("reserved rides response", response);
-  data.reservedRides = (await response.json()).rides;
+  data.reservedRides = response.data.rides;
 }
 
 onMounted(() => {

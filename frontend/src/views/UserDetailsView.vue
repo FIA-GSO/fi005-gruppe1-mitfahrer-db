@@ -23,10 +23,10 @@ async function submit(formData: any) {
   const response = await API(
     "edit-user-details",
     "POST",
-    JSON.stringify(formData)
+    formData
   );
   console.log("Edit response", response);
-  userStore.user = (await response.json()).user;
+  userStore.user = response.data.user;
 }
 </script>
 

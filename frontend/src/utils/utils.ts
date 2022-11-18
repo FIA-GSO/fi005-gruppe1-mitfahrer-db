@@ -13,19 +13,27 @@ function getErrorMessage(status: Number) {
     }
   }
 
-const API = async (endpoint: string, method: string = "GET", body?: any) => {
-    const res = await fetch(apiUrl + endpoint, {
+const API = async (endpoint: string, method: string = "GET", bodyObj?: any) => {
+    const res = (await fetch(apiUrl + endpoint, {
         credentials: "include",
         method,
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
         },
-        body
-    })
+        body: bodyObj ? JSON.stringify(bodyObj) : null
+    }) as any)
     if (!res.ok) {
         throw new Error(getErrorMessage(res.status))
     }
+
+    const data : any = await res.json()
+    res.data = data
+
+    if (data.status !== 'success') {
+      throw new Error(getErrorMessage(data.status))
+    }
+
     return res
 }
 
