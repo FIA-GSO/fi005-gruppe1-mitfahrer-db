@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { API } from "@/utils/utils";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { type LngLatLike } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -94,21 +94,38 @@ async function cancelReservation(id: string) {
   } catch (e) {}
 }
 
-async function createMap(coordinates: any) {
+async function createMap(coordinates: LngLatLike, direction: string) {
   console.log("Map loaded", coordinates);
   mapboxgl.accessToken =
     "pk.eyJ1IjoiZ3NvbWl0ZmFocmVyZGIiLCJhIjoiY2xhaThmaGw3MDA3cjN2cGdvcXoyaGJjNyJ9.njwSq8e35577L6DyujSyKQ";
+
+  const gsoLngLat : LngLatLike = [6.995640957065214, 50.927547849999996]
+
   const map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/light-v9",
-    center: coordinates,
-    zoom: 15,
+    center: direction == 'to' ? coordinates :  gsoLngLat,
+    zoom: 17
   });
-  const marker = new mapboxgl.Marker().setLngLat(coordinates).addTo(map);
+  
   map.on("load", () => {
-    // TODO: Here we want to load a layer
-    // TODO: Here we want to load/setup the popup
-  });
+    new mapboxgl.Marker({
+    color: direction == 'from' ? "#5bd56d" : "#85b5cc",
+  }).setLngLat(coordinates)
+  .setPopup(new mapboxgl.Popup({closeButton: false}).setHTML(`<h1>${direction === 'from' ? 'Ankunft' : 'Abfahrt'}</h1>`))
+  .addTo(map);
+  
+  new mapboxgl.Marker({
+    color: direction == 'to' ? "#5bd56d" : "#85b5cc"
+  })
+  .setLngLat(gsoLngLat)
+  .setPopup(new mapboxgl.Popup({closeButton: false}).setHTML(`<h1>${direction === 'to' ? 'Ankunft' : 'Abfahrt'}</h1>`))
+  .addTo(map);
+
+  map.fitBounds([coordinates, gsoLngLat], {padding: 100})
+
+})
+  
 }
 
 const isMounted = new Promise<void>((resolve) => onMounted(resolve));
@@ -117,7 +134,7 @@ async function setup() {
   const rideId = route.params.id as string;
   const ride = await getRide(rideId);
   await isMounted;
-  createMap([ride.coordinates.longitude, ride.coordinates.latitude]);
+  createMap([ride.coordinates.longitude, ride.coordinates.latitude], ride.direction);
 }
 
 async function reportDelay() {
