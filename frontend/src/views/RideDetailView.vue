@@ -188,7 +188,7 @@ setup();
 
             <span
               v-if="data.ride.isStarted"
-              class="font-semibold text-xs uppercasetext-orange-500"
+              class="font-semibold text-xs uppercase text-orange-500"
               >Gestartet</span
             >
             <span v-else class="font-semibold text-xs uppercase text-gray-500"
