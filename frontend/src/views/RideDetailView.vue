@@ -173,6 +173,9 @@ setup();
               <font-awesome-icon v-if="data.ride.ownerGender === 'other'" icon="fa-solid fa-genderless" class="text-violet-400"/>
             </span>
             
+            <span v-if="data.ride.isStartet" class="font-semibold text-xs uppercasetext-orange-500">Gestartet</span>
+            <span v-else class="font-semibold text-xs uppercase text-gray-500">Nicht gestartet</span>
+            
           </p>
           <p class="mb-2">
             <span class="font-semibold">Abfahrt: </span>
@@ -223,12 +226,6 @@ setup();
                 :href="'mailto:' + data.ride.contactEmail"
                 >Kontakt (E-Mail)</a
               >
-          </p>
-          <p class="mb-2">
-            <span class="font-semibold">Gestartet: </span
-            ><span class="font-bold">{{
-              data.ride.isStarted ? "Ja" : "Nein"
-            }}</span>
           </p>
           <FormKit
             type="checkbox"
