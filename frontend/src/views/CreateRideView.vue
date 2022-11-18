@@ -19,7 +19,7 @@ async function submit(data: any) {
   delete data.arrivalAddress;
 
   try {
-    const response = await API("rides/create", "POST", JSON.stringify(data));
+    const response = await API("rides/create", "POST", data);
     if (response.ok) {
       router.push({
         path: "/",

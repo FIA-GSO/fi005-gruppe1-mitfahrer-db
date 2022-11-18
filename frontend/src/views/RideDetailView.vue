@@ -20,9 +20,9 @@ async function cancelRide(id: string) {
     const response = await API(
       "rides/cancel",
       "POST",
-      JSON.stringify({
-        id,
-      })
+      {
+        id
+      }
     );
     console.log(response);
     router.push({
@@ -38,7 +38,7 @@ async function getRide(id: string): Promise<any> {
     console.log("ID", id);
     const response = await API(`rides/detail?id=${id}`);
     console.log("ride detail response", response);
-    data.ride = (await response.json()).ride;
+    data.ride = response.data.ride;
     return data.ride;
   } catch (error: any) {
     console.log(error);
@@ -47,51 +47,20 @@ async function getRide(id: string): Promise<any> {
 
 async function reserveRide(id: string) {
   try {
-    const response = await fetch("http://127.0.0.1:5000/rides/reserve", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id,
-      }),
-    }).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-      return r.json();
-    });
+    const response = await API('rides/reserve', "POST", {id})
     console.log("Reserve Response", response);
-    data.ride = response.ride;
+    data.ride = response.data.ride;
   } catch (e) {}
 }
 
 async function cancelReservation(id: string) {
   try {
-    const response = await fetch(
-      "http://127.0.0.1:5000/rides/cancel-reservation",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-        }),
-      }
-    ).then((r) => {
-      if (!r.ok) {
-        throw new Error();
-      }
-      return r.json();
-    });
+    const response = await API("cancel-reservation", "POST", {id})
     console.log("Cancel Reservation Response", response);
-    data.ride = response.ride;
-  } catch (e) {}
+    data.ride = response.data.ride;
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 async function createMap(coordinates: LngLatLike, direction: string) {
@@ -148,14 +117,16 @@ async function reportDelay() {
     const response = await API(
       "rides/report-delay",
       "POST",
-      JSON.stringify({
+      {
         id: route.params.id,
         delayMinutes,
-      })
-    ).then((r) => r.json());
+      }
+    )
     console.log("Delay response", response);
-    data.ride = response.ride;
-  } catch (error: any) {}
+    data.ride = response.data.ride;
+  } catch (error: any) {
+    console.log(error)
+  }
 }
 
 setup();
@@ -163,7 +134,7 @@ setup();
 
 <template>
   <main class="bg-white p-8">
-    <div class="flex md:flex-row flex-col gap-6 mb-6">
+    <div class="flex md:flex-row flex-col-reverse gap-6 mb-6">
       <div>
         <div v-if="data.ride">
           <p class="mb-4">
@@ -244,9 +215,9 @@ setup();
       <div id="map" class="grow h-96 md:h-auto" />
     </div>
     <div class="flex flex-row gap-2">
-      <template v-if="!data.ride.isOwner">
+      <template v-if="!data?.ride?.isOwner">
         <button
-          v-if="!data.ride.isReserved"
+          v-if="!data?.ride?.isReserved"
           @click="reserveRide(data.ride.id)"
           class="bg-gso-blue px-4 py-2 text-white rounded-full"
         >
