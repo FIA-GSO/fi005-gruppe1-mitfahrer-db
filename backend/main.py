@@ -286,6 +286,9 @@ def reset_password_confirm():
     return {"status": "success"}
 
 
+from SendMail import send_mail_from_template
+
+
 @app.route("/register", methods=["POST"])
 def register():
     email = request.json.get("email")
@@ -301,6 +304,13 @@ def register():
         print("Created unverified user", user, email, auth_token)
     else:
         print("Re-using existing user", user, email, user.auth_token)
+
+    response = send_mail_from_template(
+        "bestaetigungsmail",
+        email,
+        link="http://127.0.0.1:5173/register-confirm?token=" + user.auth_token,
+    )
+    print("MG", email, response, response.text)
 
     return {"status": "success", "tempAuthToken": user.auth_token}
 

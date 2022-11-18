@@ -55,7 +55,7 @@ function updateFromToFields() {
               label="Abfahrtsdatum"
               validation="required"
             />
-            <div class="flex flex-row w-full gap-4">
+            <div class="flex flex-row w-full gap-4 max-w-[25em]">
               <FormKit
                 type="time"
                 name="timeRangeStart"
