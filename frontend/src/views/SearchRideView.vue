@@ -103,6 +103,15 @@ function updateFromToFields() {
               label="Max. Kilometerpauschale (€/km)"
               step="0.01"
               validation="required"
+              value="0.2"
+            />
+            <FormKit
+              type="number"
+              name="maxDistance"
+              label="Umkreis max. km"
+              step="0.1"
+              validation="required"
+              value="10"
             />
             <FormKit
               type="checkbox"
@@ -115,9 +124,9 @@ function updateFromToFields() {
               }"
             />
             <FormKit
-              type="radio"
+              type="checkbox"
               label="Zahlungsmethoden"
-              name="paymentMethod"
+              name="paymentMethods"
               validation="required"
               :options="{
                 cash: 'Barzahlung',

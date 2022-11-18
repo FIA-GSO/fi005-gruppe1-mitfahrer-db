@@ -101,7 +101,7 @@ class Ride(db.Model):
 
     departure_date_time = db.Column(db.DateTime)
 
-    ride_is_started = db.Column(db.Boolean)
+    ride_is_started = db.Column(db.Boolean, default=False)
     ride_is_canceled = db.Column(db.Boolean)
     delay_minutes = db.Column(db.Integer, nullable=True)
     price_per_kilometer = db.Column(db.Float)
@@ -111,7 +111,8 @@ class Ride(db.Model):
     pets = db.Column(db.Boolean)
     corona_hygiene = db.Column(db.Boolean, default=False)
     smoker = db.Column(db.Boolean, default=False)
-    payment_method = db.Column(db.String, default=False)
+    payment_cash = db.Column(db.Boolean, default=False)
+    payment_paypal = db.Column(db.Boolean, default=False)
 
     user = db.relationship(
         "User",
@@ -130,6 +131,11 @@ class Ride(db.Model):
             other.append("coronaHygiene")
         if self.smoker:
             other.append("smoker")
+        payment_methods = []
+        if self.payment_cash:
+            payment_methods.append("cash")
+        if self.payment_paypal:
+            payment_methods.append("paypal")
         return {
             "id": self.id,
             "address": self.address,
@@ -152,11 +158,13 @@ class Ride(db.Model):
             "userImage": "images/" + self.user.image + ".png"
             if self.user.image
             else "",
-            "paymentMethod": self.payment_method,
             "isOwner": self.user.email == current_user.email,
             "contactEmail": self.user.email,
             "isExpired": self.departure_date_time < datetime.now(),
             "ownerGender": self.user.gender,
+            "reservations": [r.to_dict() for r in self.reservations],
+            "isStarted": self.ride_is_started,
+            "paymentMethods": payment_methods,
         }
 
 
@@ -165,9 +173,13 @@ class Reservation(db.Model):
 
     user_email = db.Column(db.String, db.ForeignKey("user.email"), primary_key=True)
     ride_id = db.Column(db.Integer, db.ForeignKey("ride.id"), primary_key=True)
+    location = db.Column(db.String)
 
     ride = db.relationship("Ride", foreign_keys=ride_id, backref="reservations")
     user = db.relationship("User", foreign_keys=user_email, backref="reservations")
+
+    def to_dict(self):
+        return {"email": self.user_email, "location": self.location}
 
     # user = db.relationship("User", foreign_keys=user_email, backref="reservations")
 
@@ -458,6 +470,7 @@ def get_reserved_rides():
 def reserve_ride():
     user = flask_login.current_user
     ride_id = int(request.json.get("id"))
+    location = request.json.get("location")
 
     existing_reservation = (
         db.session.query(Reservation)
@@ -470,11 +483,25 @@ def reserve_ride():
     if existing_reservation:
         return {"status": "fail", "message": "Reservierung existiert bereits"}
 
-    reservation = Reservation(user_email=user.email, ride_id=ride_id)
+    reservation = Reservation(user_email=user.email, ride_id=ride_id, location=location)
     db.session.add(reservation)
     db.session.commit()
 
     return {"status": "success", "ride": reservation.ride.to_dict(user)}
+
+
+@app.route("/rides/start", methods=["POST"])
+@flask_login.login_required
+def start_ride():
+    user = flask_login.current_user
+    ride_id = int(request.json.get("id"))
+
+    ride = Ride.query.get(ride_id)
+    ride.ride_is_started = True
+    db.session.add(ride)
+    db.session.commit()
+
+    return {"status": "success", "ride": ride.to_dict(user)}
 
 
 @app.route("/rides/cancel", methods=["POST"])
@@ -553,6 +580,8 @@ def create_ride():
     coordinates, place_name = AdressConverter.get_mapbox_coordinates(address)
 
     other = request.json.get("other")
+    payment_methods = request.json.get("paymentMethods")
+
     ride = Ride(
         user_email=user.email,
         address=place_name,
@@ -570,7 +599,8 @@ def create_ride():
         pets="pets" in other,
         corona_hygiene="coronaHygiene" in other,
         smoker="smoker" in other,
-        payment_method=request.json.get("paymentMethod"),
+        payment_cash="cash" in payment_methods,
+        payment_paypal="paypal" in payment_methods,
     )
     db.session.add(ride)
     db.session.commit()
@@ -588,8 +618,10 @@ def search_rides():
     start_range = datetime.combine(the_date, time_start)
     end_range = datetime.combine(the_date, time_end)
     direction = request.args.get("direction")
-    payment_method = request.args.get("paymentMethod")
+    payment_methods = request.args.get("paymentMethods")
+
     max_price_per_kilometer = request.args.get("pricePerKilometer")
+    max_distance_km = float(request.args.get("maxDistance"))
 
     input_place_name = request.args.get("address")
     coordinates, place_name = AdressConverter.get_mapbox_coordinates(input_place_name)
@@ -610,7 +642,6 @@ def search_rides():
         (Ride.departure_date_time >= start_range)
         & (Ride.departure_date_time <= end_range)
         & (Ride.direction == direction)
-        & (Ride.payment_method == payment_method)
         & (Ride.user.has(type=user.type))
         & (Ride.price_per_kilometer <= max_price_per_kilometer)
     )
@@ -620,6 +651,15 @@ def search_rides():
         rides_query = rides_query.filter(Ride.smoker == False)
     if not "pets" in other:
         rides_query = rides_query.filter(Ride.pets == False)
+
+    if "cash" in payment_methods and "paypal" in payment_methods:
+        rides_query = rides_query.filter(
+            (Ride.payment_cash == True) | (Ride.payment_paypal == True)
+        )
+    elif "cash" in payment_methods:
+        rides_query = rides_query.filter(Ride.payment_cash == True)
+    elif "paypal" in payment_methods:
+        rides_query = rides_query.filter(Ride.payment_paypal == True)
 
     rides = rides_query.all()
 
@@ -635,9 +675,13 @@ def search_rides():
 
     sorted_rides = sorted(rides, key=lambda ride: ride_distances[ride.id].meters)
 
+    sorted_filtered_rides = [
+        r for r in sorted_rides if ride_distances[ride.id].km <= max_distance_km
+    ]
+
     ride_dicts = [
         ride.to_dict(user) | {"distance": ride_distances[ride.id].meters}
-        for ride in sorted_rides
+        for ride in sorted_filtered_rides
     ]
 
     return {"status": "success", "rides": ride_dicts}
@@ -660,7 +704,7 @@ def create_mock_ride(label, date_time, lat, long):
         pets=False,
         corona_hygiene=True,
         smoker=True,
-        payment_method="cash",
+        payment_cash=True,
     )
 
 
