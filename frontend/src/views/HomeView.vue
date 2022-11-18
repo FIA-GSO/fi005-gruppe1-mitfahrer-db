@@ -35,30 +35,36 @@ onMounted(() => {
 <template>
   <main class="flex sm:items-center">
     <div class="grow">
-      <h1 class="text-white mt-8 sm:mt-12 text-xl font-semibold mb-1 ml-1">
+      <h1
+        class="text-white mt-4 text-center sm:text-left sm:mt-8 text-xl font-semibold mb-1 ml-1"
+      >
         Reservierte Fahrten
       </h1>
       <RideResults :rides="data.reservedRides" />
-      <RouterLink
-        :to="{ name: 'searchRides' }"
-        class="block bg-white sm:rounded p-2 py-1 w-full border-y sm:border border-black mt-1 text-center"
-      >
-        Neue Fahrt suchen
-      </RouterLink>
+      <div class="flex justify-center">
+        <RouterLink
+          :to="{ name: 'searchRides' }"
+          class="block bg-white rounded px-5 py-1 mt-2 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
+        >
+          Fahrt suchen
+        </RouterLink>
+      </div>
     </div>
     <div class="mb-8">
       <h1
-        class="text-white mt-4 text-center sm:text-left sm:mt-12 text-xl font-semibold mb-1 ml-1"
+        class="text-white mt-4 text-center sm:text-left sm:mt-8 text-xl font-semibold mb-1 ml-1"
       >
         Angebotene Fahrten
       </h1>
       <RideResults :rides="data.postedRides" />
-      <RouterLink
-        :to="{ name: 'createRide' }"
-        class="block bg-white sm:rounded p-2 py-1 w-full border-y sm:border border-black mt-1 text-center"
-      >
-        Fahrt anbieten
-      </RouterLink>
+      <div class="flex justify-center">
+        <RouterLink
+          :to="{ name: 'createRide' }"
+          class="block bg-white rounded px-5 py-1 mt-2 mt-1 text-center font-semibold hover:bg-blue-50 hover:text-cyan-800"
+        >
+          Neue Fahrt anbieten
+        </RouterLink>
+      </div>
     </div>
   </main>
 </template>
