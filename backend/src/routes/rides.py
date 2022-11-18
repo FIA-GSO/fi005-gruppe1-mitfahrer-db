@@ -231,6 +231,16 @@ def search_rides():
 
     other = request.args.get("other")
 
+    print("in", coordinates, place_name)
+
+    # rides = (
+    #     db.session.query(Ride)
+    #     .join(User)
+    #     .filter(Ride.user_email == user.email)
+    #     .order_by(Ride.departure_date_time)
+    #     .all()
+    # )
+
     rides_query = Ride.query.filter(
         (Ride.departure_date_time >= start_range)
         & (Ride.departure_date_time <= end_range)

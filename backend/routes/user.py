@@ -7,6 +7,7 @@ from lib.SendMail import send_mail_from_template
 import secrets
 import re
 from datetime import date
+from base64 import b64decode
 
 
 @login_manager.user_loader
