@@ -19,16 +19,13 @@ async function submit(data: any) {
   delete data.arrivalAddress;
 
   try {
-    const response = await API("rides/create", "POST", JSON.stringify(data))
+    const response = await API("rides/create", "POST", JSON.stringify(data));
     if (response.ok) {
       router.push({
         path: "/",
       });
     }
-  } catch (error: any) {
-
-  }
-
+  } catch (error: any) {}
 }
 
 function updateFromToFields() {
@@ -47,23 +44,72 @@ function updateFromToFields() {
     <FormKit type="form" submit-label="Fahrt veröffentlichen" @submit="submit">
       <div class="flex flex-col md:flex-row w-auto md:gap-8">
         <div class="grow">
-          <FormKit v-model="rideDirection" @input="updateFromToFields" type="radio" label="Fahrtrichtung"
-            name="direction" :options="{ to: 'Hinfahrt', from: 'Rückfahrt' }" />
-          <FormKit v-model="departureAddress" type="text" name="departureAddress" label="Abfahrtort"
-            :disabled="rideDirection == 'from'" />
-          <FormKit v-model="arrivalAddress" type="text" name="arrivalAddress" label="Zielort"
-            :disabled="rideDirection == 'to'" />
-          <FormKit type="number" name="pricePerKilometer" label="Kilometerpauschale" />
-          <FormKit type="datetime-local" name="departureDateTime" label="Abfahrtszeitpunkt" />
+          <FormKit
+            v-model="rideDirection"
+            @input="updateFromToFields"
+            type="radio"
+            label="Fahrtrichtung"
+            name="direction"
+            :options="{ to: 'Hinfahrt', from: 'Rückfahrt' }"
+          />
+          <FormKit
+            v-model="departureAddress"
+            type="text"
+            name="departureAddress"
+            label="Abfahrtort"
+            :disabled="rideDirection == 'from'"
+            validation="required"
+          />
+          <FormKit
+            v-model="arrivalAddress"
+            type="text"
+            name="arrivalAddress"
+            label="Zielort"
+            :disabled="rideDirection == 'to'"
+            validation="required"
+          />
+          <FormKit
+            type="number"
+            name="pricePerKilometer"
+            label="Kilometerpauschale (€/km)"
+            step="0.01"
+            validation="required"
+          />
+          <FormKit
+            type="datetime-local"
+            name="departureDateTime"
+            label="Abfahrtszeitpunkt"
+            validation="required"
+          />
         </div>
         <div class="grow">
           <FormKit type="text" name="carType" label="Autotyp" />
-          <FormKit type="number" name="availableSeatCount" label="Freie Sitzplätze" />
-          <FormKit type="checkbox" label="Sonstiges" name="other" :options="{
-            pets: 'Haustiere',
-            smoker: 'Raucher Fahrzeug',
-            coronaHygiene: 'Corona Hygiene Regeln',
-          }" />
+          <FormKit
+            type="number"
+            name="availableSeatCount"
+            label="Freie Sitzplätze"
+            validation="required"
+          />
+          <FormKit
+            type="checkbox"
+            label="Sonstiges"
+            name="other"
+            :options="{
+              pets: 'Haustiere',
+              smoker: 'Raucher Fahrzeug',
+              coronaHygiene: 'Corona Hygiene Regeln',
+            }"
+          />
+          <FormKit
+            type="radio"
+            label="Zahlungsmethoden"
+            name="paymentMethod"
+            :options="{
+              cash: 'Barzahlung',
+              paypal: 'PayPal',
+            }"
+            validation="required"
+          />
         </div>
       </div>
     </FormKit>
