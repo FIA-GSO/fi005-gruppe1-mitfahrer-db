@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="bg-white rounded-md overflow-hidden">
+  <div class="bg-white sm:rounded-md overflow-hidden">
     <RouterLink
       v-for="ride in rides"
       :to="{ name: 'rideDetails', params: { id: ride.id } }"
